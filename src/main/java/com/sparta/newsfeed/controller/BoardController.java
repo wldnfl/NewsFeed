@@ -11,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -74,5 +72,22 @@ public class BoardController {
     })
     public String update_board(HttpServletRequest servletRequest ,@RequestBody BoardRequestDto boardRequestDto) {
         return boardService.update_board(servletRequest , boardRequestDto);
+    }
+
+    @PatchMapping("/board/update/m") // Multimedia의 m
+    @Operation(summary = "게시물 + 미디어 수정")
+    @Parameters({
+            @Parameter(name = "image",description = "이미지 수정시"),
+            @Parameter(name = "movie",description = "동영상 수정시"),
+            @Parameter(name = "board",description =
+                    "개시판 수정시 내용('json' 으로 넣을것 자동 변환해둠 " +
+                            "예시 { id:1 , contents: string })")
+    })
+    public String update_m_board(
+            HttpServletRequest servletRequest,
+            @RequestPart(required = false) MultipartFile image,
+            @RequestPart(required = false) MultipartFile movie,
+            @RequestPart String board) {
+        return boardService.update_m_board(servletRequest, image, movie, board);
     }
 }

@@ -21,8 +21,10 @@ public class Multimedia extends Timer{
     @Column(name = "movie", columnDefinition = "LONGBLOB")
     private byte[] movie;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "board_id" )
     private Board board;
+
+
 
 }

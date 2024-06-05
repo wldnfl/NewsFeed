@@ -21,8 +21,8 @@ public class Board extends Timer{
 
     private String contents;
 
-    @OneToMany(mappedBy = "board", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
-    private List<Multimedia> multimediaList = new ArrayList<>();
+    @OneToOne(mappedBy = "board", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    private Multimedia multimedia;
 
     public Board() {
     }
@@ -34,15 +34,5 @@ public class Board extends Timer{
 
     public void update( BoardRequestDto boardRequestDto) {
         this.contents = boardRequestDto.getContents();
-    }
-
-    public void addMultimedia(Multimedia multimedia) {
-        multimediaList.add(multimedia);
-        multimedia.setBoard(this);
-    }
-
-    public void removeMultimedia(Multimedia multimedia) {
-        multimediaList.remove(multimedia);
-        multimedia.setBoard(null);
     }
 }

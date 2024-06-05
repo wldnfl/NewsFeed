@@ -1,5 +1,6 @@
 package com.sparta.newsfeed.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.newsfeed.dto.BoardRequestDto;
 import com.sparta.newsfeed.dto.BoardResponseDto;
@@ -38,8 +39,7 @@ public class BoardService {
             HttpServletRequest servletRequest, MultipartFile image, MultipartFile movie, String board) {
 
         try {
-            BoardRequestDto boardRequestDto = objectMapper.readValue(board,BoardRequestDto.class);
-            Board new_board = new Board(servletRequest, boardRequestDto);
+            Board new_board = new Board(servletRequest, getBoard(servletRequest,board));
             boardRepository.save(new_board);
 
             Multimedia multimedia = new Multimedia();
@@ -95,6 +95,38 @@ public class BoardService {
         return "수정완료";
     }
 
+    // 개시판 + 파일 업데이트
+    @Transactional
+    public String update_m_board(
+            HttpServletRequest servletRequest, MultipartFile image, MultipartFile movie, String board) {
+
+        try {
+            Board new_board = getBoard(getBoard(servletRequest,board));
+            new_board.update(getBoard(servletRequest,board));
+            Optional<Multimedia> multimedia = multimediaRepository.findById(new_board.getId());
+
+
+
+            multimedia.get().setBoard(new_board);
+            if (image != null && !image.isEmpty() && image.getContentType() != null && image.getContentType().toLowerCase().contains("image")) {
+                multimedia.get().setImage(image.getBytes());
+            }
+
+            if (movie != null && !movie.isEmpty() && movie.getContentType() != null && (movie.getContentType().toLowerCase().contains("mp4") || movie.getContentType().toLowerCase().contains("avi"))) {
+                multimedia.get().setMovie(movie.getBytes());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return "수정 완료";
+    }
+
+    /* 도구 상자 */
+
+    // 문자열 Board로 변환
+    private BoardRequestDto getBoard(HttpServletRequest servletRequest, String board) throws JsonProcessingException {
+        return objectMapper.readValue(board, BoardRequestDto.class);
+    }
 
     // 개시판 id로 찾아서 가셔오기
     private Board getBoard(BoardRequestDto boardRequestDto) {
@@ -103,6 +135,4 @@ public class BoardService {
         Board board = boards.get();
         return board;
     }
-
-
 }
