@@ -18,8 +18,8 @@ public class SwaggerConfiguration {
 
     private Info apiInfo() {
         return new Info()
-                .title("켈린더")
-                .description("켈린더 - 스파르타 스프링 입문 과제")
+                .title("1바이트")
+                .description("뉴스피드 팀과제")
                 .version("0.0.1");
     }
 
