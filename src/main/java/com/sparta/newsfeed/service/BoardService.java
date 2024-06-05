@@ -31,7 +31,7 @@ public class BoardService {
             HttpServletRequest servletRequest, BoardRequestDto boardRequestDto) {
         Board board = new Board(servletRequest,boardRequestDto);
         boardRepository.save(board);
-        return "생성 완료";
+        return board.getContents() +" 생성 완료";
     }
 
     // 개시판 만들때 파일도 같이 넣음
