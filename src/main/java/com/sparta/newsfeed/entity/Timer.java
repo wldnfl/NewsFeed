@@ -1,4 +1,4 @@
-package com.sparta.NewsFeed.entity;
+package com.sparta.newsfeed.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

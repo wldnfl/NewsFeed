@@ -1,9 +1,9 @@
-package com.sparta.NewsFeed.service;
+package com.sparta.newsfeed.service;
 
-import com.sparta.NewsFeed.dto.BoardRequestDto;
-import com.sparta.NewsFeed.dto.BoardResponseDto;
-import com.sparta.NewsFeed.entity.Board;
-import com.sparta.NewsFeed.repository.BoardRepository;
+import com.sparta.newsfeed.dto.BoardRequestDto;
+import com.sparta.newsfeed.dto.BoardResponseDto;
+import com.sparta.newsfeed.entity.Board;
+import com.sparta.newsfeed.repository.BoardRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

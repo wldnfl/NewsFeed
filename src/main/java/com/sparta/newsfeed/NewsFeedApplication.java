@@ -1,4 +1,4 @@
-package com.sparta.NewsFeed;
+package com.sparta.newsfeed;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

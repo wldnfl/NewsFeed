@@ -1,6 +1,6 @@
-package com.sparta.NewsFeed.dto;
+package com.sparta.newsfeed.dto;
 
-import com.sparta.NewsFeed.entity.Board;
+import com.sparta.newsfeed.entity.Board;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

@@ -1,7 +1,7 @@
-package com.sparta.NewsFeed.entity;
+package com.sparta.newsfeed.entity;
 
 
-import com.sparta.NewsFeed.dto.BoardRequestDto;
+import com.sparta.newsfeed.dto.BoardRequestDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
