@@ -2,12 +2,12 @@ package com.sparta.newsfeed.entity;
 
 
 import com.sparta.newsfeed.dto.BoardRequestDto;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -21,6 +21,8 @@ public class Board extends Timer{
 
     private String contents;
 
+    @OneToMany(mappedBy = "board", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    private List<Multimedia> multimediaList = new ArrayList<>();
 
     public Board() {
     }
@@ -32,5 +34,15 @@ public class Board extends Timer{
 
     public void update( BoardRequestDto boardRequestDto) {
         this.contents = boardRequestDto.getContents();
+    }
+
+    public void addMultimedia(Multimedia multimedia) {
+        multimediaList.add(multimedia);
+        multimedia.setBoard(this);
+    }
+
+    public void removeMultimedia(Multimedia multimedia) {
+        multimediaList.remove(multimedia);
+        multimedia.setBoard(null);
     }
 }
