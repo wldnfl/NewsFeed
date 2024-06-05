@@ -40,10 +40,9 @@ public class CommentService {
     public String update_comment(Long boardId,Long commentId, CommentRequestDto commentRequestDto) {
         Board board = getBoard(boardId);
         Comment comment = getComment(commentId);
-        String content = "";
-        content = comment.getContents();
+        String contents = comment.getContents();
         comment.update(commentRequestDto);
-        return "변경 전 :"+content +"\n변경 후 :"+commentRequestDto.getContents();
+        return "변경 전 :"+contents +"\n변경 후 :"+commentRequestDto.getContents();
     }
 
 
