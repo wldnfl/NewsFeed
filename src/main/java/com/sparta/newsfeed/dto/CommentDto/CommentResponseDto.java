@@ -1,4 +1,4 @@
-package com.sparta.newsfeed.dto;
+package com.sparta.newsfeed.dto.CommentDto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sparta.newsfeed.entity.Comment;

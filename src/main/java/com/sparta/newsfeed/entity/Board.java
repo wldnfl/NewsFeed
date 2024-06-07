@@ -1,12 +1,11 @@
 package com.sparta.newsfeed.entity;
 
 
-import com.sparta.newsfeed.dto.BoardRequestDto;
+import com.sparta.newsfeed.dto.boardDto.BoardRequestDto;
 import jakarta.persistence.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter

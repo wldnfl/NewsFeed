@@ -1,9 +1,9 @@
-package com.sparta.newsfeed.dto;
+package com.sparta.newsfeed.dto.UserDto;
 
 import lombok.Getter;
 
 @Getter
-public class BoardRequestDto {
+public class UserRequestDto {
 
     private Long id;
     private Long user_id;
