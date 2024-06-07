@@ -1,10 +1,14 @@
 package com.sparta.newsfeed.entity.User;
 
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
+import com.sparta.newsfeed.entity.Board;
+import com.sparta.newsfeed.entity.Comment;
 import com.sparta.newsfeed.entity.Timer;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 
 @Setter
@@ -27,6 +31,16 @@ public class User extends Timer {
     private String one_liner;
     //리프레쉬 토큰
     private String refresh_token;
+
+    //개시판
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @JoinColumn(name = "user_id")
+    private List<Board> boardList;
+
+    // 댓글
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @JoinColumn(name = "user_id")
+    private List<Comment> commentList;
 
     // 유저의 상태코드. 기본값은 정상임.
     @Enumerated(EnumType.STRING)

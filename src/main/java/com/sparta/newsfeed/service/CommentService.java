@@ -1,13 +1,18 @@
 package com.sparta.newsfeed.service;
 
 import com.sparta.newsfeed.dto.CommentDto.CommentRequestDto;
+import com.sparta.newsfeed.dto.CommentDto.CommentResponseDto;
+import com.sparta.newsfeed.dto.boardDto.BoardResponseDto;
 import com.sparta.newsfeed.entity.Board;
 import com.sparta.newsfeed.entity.Comment;
 import com.sparta.newsfeed.repository.BoardRepository;
 import com.sparta.newsfeed.repository.CommentRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +23,7 @@ public class CommentService {
 
     //댓글 생성
     @Transactional
-    public String create_comment(Long boardId, CommentRequestDto CommentRequestDto){
+    public String create_comment(HttpServletRequest servletRequest, Long boardId, CommentRequestDto CommentRequestDto){
         Board board = getBoard(boardId);
 
         Comment comment = new Comment(CommentRequestDto,board);
@@ -31,9 +36,21 @@ public class CommentService {
     }
 
 
+    @Transactional
+    public List<CommentResponseDto> board_comment(HttpServletRequest servletRequest, Long boardId) {
+        Board board = getBoard(boardId);
+
+        if (board.getCommentList().isEmpty()) {
+            throw new IllegalArgumentException( "댓글이 없습니다.");
+        }
+
+        return commentRepository.findAll().stream().filter(C -> C.getBoard().getId().equals(boardId))
+                .map(CommentResponseDto ::new).toList();
+    }
+
     //댓글 수정
     @Transactional
-    public String update_comment(Long boardId,Long commentId, CommentRequestDto commentRequestDto) {
+    public String update_comment(HttpServletRequest servletRequest,Long boardId,Long commentId, CommentRequestDto commentRequestDto) {
         Board board = getBoard(boardId);
         Comment comment = getComment(commentId);
         String content = "";
@@ -44,7 +61,7 @@ public class CommentService {
 
 
     //댓글 삭제
-    public String delete (Long id){
+    public String delete (HttpServletRequest servletRequest, Long id){
             Comment comment = getComment(id);
             commentRepository.delete(comment);
             return "댓글 삭제 완료";

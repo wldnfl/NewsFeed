@@ -23,25 +23,15 @@ public class CommentResponseDto {
     private LocalDateTime create_at;
     private LocalDateTime modified_at;
 
-    public CommentResponseDto(Long id, String content) {
-        this.id = id;
-        this.user_id = user_id;
-        this.board_user_id = board_user_id;
-        this.contents = this.contents;
-        this.like_count = like_count;
-        this.create_at = create_at;
-        this.modified_at = modified_at;
-    }
+    public CommentResponseDto(Comment comment) {
+    this.id = comment.getId();
+//    this.user_id = comment.getUser().getId();
+//    this.board_user_id = comment.getBoard().getUser().getId();
+    this.contents = comment.getContents();
+    this.create_at = comment.getCreated_time();
+    this.modified_at = comment.getModifie_time();
 
-    public static CommentResponseDto toDto(Comment comment) {
-        return new CommentResponseDto(
-                comment.getId(),
-                //comment.getUserId(),
-                //comment.getBoardUserId(),
-                comment.getContents()
-                //comment.getLikeCount(),
-                //comment.getCreatedAt(),
-                //comment.getModifiedAt()
-        );
-    }
+}
+
+
 }
