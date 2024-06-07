@@ -29,9 +29,9 @@ public class Comment extends Timer {
     @JoinColumn(name = "board_id", insertable = false, updatable = false)
     private Board board;
 
-    public Comment(CommentRequestDto commentRequestDto, Board board) {
+    public Comment(CommentRequestDto commentRequestDto, Board board, User user) {
         this.id = commentRequestDto.getId();
-        this.user_id = commentRequestDto.getUser_id();
+        this.user_id = user.getId();
         this.board_user_id = board.getUser_id();
         this.contents = commentRequestDto.getContents();
     }

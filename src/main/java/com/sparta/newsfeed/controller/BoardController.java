@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -43,18 +45,17 @@ public class BoardController {
         return boardService.create_m_board(servletRequest, image, movie, board);
     }
 
-/*    @GetMapping("/board/all")
-    @Operation(summary = "개시물 전체 조회")
+    @GetMapping("/board/all")
+    @Operation(summary = "소유한 개시물 전체 조회")
     public List<BoardResponseDto> get_all_board(HttpServletRequest servletRequest) {
         return boardService.get_all_board(servletRequest);
-    }*/
+    }
 
     @GetMapping("/board/one")
     @Operation(summary = "개시물 특정 조회")
     @Parameter(name = "id",description = "조회할 id값")
-    public BoardResponseDto get_board(
-            HttpServletRequest servletRequest,@RequestBody BoardRequestDto boardRequestDto) {
-        return boardService.get_board(servletRequest ,boardRequestDto);
+    public BoardResponseDto get_board(@RequestBody BoardRequestDto boardRequestDto) {
+        return boardService.get_board(boardRequestDto);
     }
 
     @DeleteMapping("/board/delete")

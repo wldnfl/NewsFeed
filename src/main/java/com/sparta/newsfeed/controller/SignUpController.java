@@ -52,8 +52,9 @@ public class SignUpController {
         refreshTokenCookie.setPath("/");
         refreshTokenCookie.setMaxAge(1209600); // 2주
 
-        // 응답에 쿠키 추가
-        response.addCookie(refreshTokenCookie);
+        // 응답에 쿠키 추가 -> 리프레쉬 쿠키는 사용자가 받으면 안됌  데이터 배이스에만 저장 해야 함
+//        response.addCookie(refreshTokenCookie);
+
 
         MessageResponseDto messageResponseDto = new MessageResponseDto("로그인 성공");
         return new ResponseEntity<>(messageResponseDto, headers, HttpStatus.OK);
@@ -76,8 +77,8 @@ public class SignUpController {
         refreshTokenCookie.setMaxAge(0); // 쿠키 삭제
 
         // 응답에 쿠키 추가
-        response.addCookie(accessTokenCookie);
-        response.addCookie(refreshTokenCookie);
+/*        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);*/
 
         MessageResponseDto messageResponseDto = new MessageResponseDto("로그아웃 성공");
         return new ResponseEntity<>(messageResponseDto, HttpStatus.OK);
