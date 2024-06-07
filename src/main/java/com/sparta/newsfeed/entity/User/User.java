@@ -1,5 +1,6 @@
 package com.sparta.newsfeed.entity.User;
 
+import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.entity.Timer;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -31,5 +32,14 @@ public class User extends Timer {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserStatus userStatus = UserStatus.ACTIVE;
+
+    public void User(SignUpRequestDto userSignRequestDto){
+        this.userId = userSignRequestDto.getUserId();
+        this.password = userSignRequestDto.getPassword();
+        this.username = userSignRequestDto.getUsername();
+        this.email = userSignRequestDto.getEmail();
+        this.one_liner = userSignRequestDto.getOne_liner();
+        this.userStatus = userSignRequestDto.getUserStatus();
+    }
 
 }
