@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+//@RequestMapping("/api")
 @RequiredArgsConstructor
 public class SignUpController {
 
@@ -36,7 +36,7 @@ public class SignUpController {
     // 로그인
     @PostMapping("/user/login")
     public ResponseEntity<MessageResponseDto> loginUser(@Valid @RequestBody SignUpRequestDto requestDto, HttpServletResponse response) {
-        Map<String, String> tokens = signUpService.loginUser(requestDto);
+        Map<String, String> tokens = signUpService.loginUser(requestDto , response);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + tokens.get("accessToken"));
         headers.set("RefreshToken", "Bearer " + tokens.get("refreshToken"));
@@ -53,7 +53,6 @@ public class SignUpController {
         refreshTokenCookie.setMaxAge(1209600); // 2주
 
         // 응답에 쿠키 추가
-        response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
 
         MessageResponseDto messageResponseDto = new MessageResponseDto("로그인 성공");

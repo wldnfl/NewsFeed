@@ -7,6 +7,7 @@ import com.sparta.newsfeed.entity.User_entity.User;
 import com.sparta.newsfeed.entity.User_entity.UserStatus;
 import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import com.sparta.newsfeed.repository.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import lombok.Getter;
@@ -46,7 +47,7 @@ public class SignUpService {
     }
 
     // 유저 로그인 메서드
-    public Map<String, String> loginUser(SignUpRequestDto requestDto) {
+    public Map<String, String> loginUser(SignUpRequestDto requestDto , HttpServletResponse response) {
         User user = userRepository.findByUserId(requestDto.getUserId());
         if (user == null) {
             throw new IllegalArgumentException("유저 아이디가 올바르지 않습니다.");
@@ -60,9 +61,13 @@ public class SignUpService {
             throw new IllegalArgumentException("이미 탈퇴한 사용자 입니다.");
         }
 
+
         // 로그인 시 액세스 토큰 및 리프레시 토큰 생성 및 저장
         String accessToken = jwtTokenProvider.generateToken(user.getUserId());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
+        jwtTokenProvider.addToken(accessToken,  response);
+        //토큰 자동 저장
+
         user.setRefresh_token(refreshToken);
         userRepository.save(user);
 

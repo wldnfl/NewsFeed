@@ -5,10 +5,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +21,7 @@ import java.util.Map;
 
 public class JwtTokenProvider {
 
+    public static final String HEADER_STRING = "Authorization";
     private final SecretKey secretKey;
     private final long accessExpiration;
     private final long refreshExpiration;
@@ -74,5 +79,16 @@ public class JwtTokenProvider {
 
     private boolean isTokenExpired(String token) {
         return extractAllClaims(token).getExpiration().before(new Date());
+    }
+
+
+    public void addToken(String token, HttpServletResponse response) {
+        token = URLEncoder.encode(token, StandardCharsets.UTF_8 ).replaceAll("\\+", "%20");
+
+        Cookie cookie = new Cookie(HEADER_STRING, token);
+        cookie.setPath( "/" );
+
+        response.addCookie( cookie );
+
     }
 }
