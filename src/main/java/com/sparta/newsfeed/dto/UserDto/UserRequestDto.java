@@ -4,9 +4,10 @@ import lombok.Getter;
 
 @Getter
 public class UserRequestDto {
-
-    private Long id;
-    private Long user_id;
-    private String contents;
+    private String username;
+    private String email;
+    private String one_liner;
+    private String password;
+    private String currentPassword;
 
 }

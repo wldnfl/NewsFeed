@@ -1,4 +1,4 @@
-package com.sparta.newsfeed.entity.User;
+package com.sparta.newsfeed.entity.User_entity;
 
 public enum UserStatus {
     ACTIVE,

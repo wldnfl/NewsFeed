@@ -1,6 +1,7 @@
-package com.sparta.newsfeed.entity.User;
+package com.sparta.newsfeed.entity.User_entity;
 
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
+import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.entity.Board;
 import com.sparta.newsfeed.entity.Comment;
 import com.sparta.newsfeed.entity.Timer;
@@ -47,7 +48,10 @@ public class User extends Timer {
     @Column(nullable = false)
     private UserStatus userStatus = UserStatus.ACTIVE;
 
-    public void User(SignUpRequestDto userSignRequestDto){
+    public User() {
+    }
+
+    public User(SignUpRequestDto userSignRequestDto){
         this.userId = userSignRequestDto.getUserId();
         this.password = userSignRequestDto.getPassword();
         this.username = userSignRequestDto.getUsername();
@@ -56,4 +60,9 @@ public class User extends Timer {
         this.userStatus = userSignRequestDto.getUserStatus();
     }
 
+    public void update(UserRequestDto userSignRequestDto){
+        this.username = userSignRequestDto.getUsername();
+        this.email = userSignRequestDto.getEmail();
+        this.one_liner = userSignRequestDto.getOne_liner();
+    }
 }

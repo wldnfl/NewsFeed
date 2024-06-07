@@ -29,6 +29,7 @@ public class BoardService {
     // HttpServletRequest 는 유저 정보 받아오는거
     public String create_board(
             HttpServletRequest servletRequest, BoardRequestDto boardRequestDto) {
+
         Board board = new Board(servletRequest,boardRequestDto);
         boardRepository.save(board);
         return board.getContents() +" 생성 완료";

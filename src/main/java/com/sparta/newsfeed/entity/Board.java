@@ -2,7 +2,7 @@ package com.sparta.newsfeed.entity;
 
 
 import com.sparta.newsfeed.dto.boardDto.BoardRequestDto;
-import com.sparta.newsfeed.entity.User.User;
+import com.sparta.newsfeed.entity.User_entity.User;
 import jakarta.persistence.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
