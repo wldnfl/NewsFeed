@@ -1,8 +1,6 @@
 package com.sparta.newsfeed.service;
 
 
-
-import com.sparta.newsfeed.dto.UserDto.LoginRequestDto;
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.entity.EmailVerification;
@@ -21,8 +19,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -60,7 +56,6 @@ public class SignUpService {
         emailVerificationRepository.save(emailVerification);
         sendVerificationEmail(requestDto.getEmail(), code);
 
-        return userRepository.save(user);
         userRepository.save(user);
         return requestDto.getUsername() + "님 회원가입을 축하합니다";
     }
