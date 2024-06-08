@@ -33,7 +33,7 @@ public class UserService {
         // 비밀번호 변경 여부 확인 및 처리
         if (userRequestDto.getPassword() != null && !userRequestDto.getPassword().isEmpty()) {
             // 현재 비밀번호 확인
-            if (passwordEncoder.matches(user.getPassword() , userRequestDto.getPassword())) {
+            if (!passwordEncoder.matches(user.getPassword() , userRequestDto.getPassword())) {
                 throw new IllegalArgumentException("유저 비밀번호가 올바르지 않습니다.");
             }
 

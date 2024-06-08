@@ -1,6 +1,7 @@
 package com.sparta.newsfeed.service;
 
 
+import com.sparta.newsfeed.dto.UserDto.LoginUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.dto.emaildto.EmailRequestDto;
@@ -81,15 +82,10 @@ public class SignUpService {
     }
 
     // 유저 로그인
-    public String loginUser(SignUpRequestDto requestDto , HttpServletResponse response) {
+    public String loginUser(LoginUpRequestDto requestDto , HttpServletResponse response) {
         User user = userRepository.findByUserId(requestDto.getUserId());
-        if (user == null) {
-            throw new IllegalArgumentException("유저 아이디가 올바르지 않습니다.");
-        }
 
-        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("유저 비밀번호가 올바르지 않습니다.");
-        }
+        userlogin(requestDto, user);
 
         if (user.getUserStatus() == UserStatus.WITHDRAWAL) {
             throw new IllegalArgumentException("이미 탈퇴한 사용자 입니다.");
@@ -107,7 +103,17 @@ public class SignUpService {
         user.setRefresh_token(refreshToken);
         userRepository.save(user);
 
-        return "어서오세요 "+requestDto.getUsername() + "님 로그인이 완료되었습니다";
+        return "어서오세요 "+user.getUsername() + "님 로그인이 완료되었습니다";
+    }
+
+    private void userlogin(LoginUpRequestDto requestDto, User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("유저 아이디가 올바르지 않습니다.");
+        }
+
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("유저 비밀번호가 올바르지 않습니다.");
+        }
     }
 
     // 이메일 검사 후 상태 변경.

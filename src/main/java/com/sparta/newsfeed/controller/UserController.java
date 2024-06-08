@@ -1,6 +1,7 @@
 package com.sparta.newsfeed.controller;
 
 
+import com.sparta.newsfeed.dto.UserDto.LoginUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserResponseDto;
@@ -37,7 +38,7 @@ public class UserController {
 
     // 로그인
     @PostMapping("/user/login")
-    public String loginUser(@Valid @RequestBody SignUpRequestDto requestDto, HttpServletResponse response) {
+    public String loginUser(@Valid @RequestBody LoginUpRequestDto requestDto, HttpServletResponse response) {
         return signUpService.loginUser(requestDto, response);
     }
 
