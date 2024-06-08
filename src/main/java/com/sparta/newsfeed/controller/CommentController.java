@@ -29,9 +29,8 @@ public class CommentController {
     @GetMapping("/{boardId}/comment")
     @Operation(summary = "개시판의 댓글 조회")
     public List<CommentResponseDto> board_comment(
-            HttpServletRequest servletRequest,
             @PathVariable Long boardId){
-        return commentService.board_comment(servletRequest,boardId);
+        return commentService.board_comment(boardId);
     }
 
     @PatchMapping("/{boardId}/comment/{commentId}")
