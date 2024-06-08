@@ -8,10 +8,7 @@ import com.sparta.newsfeed.service.SignUpService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -28,6 +25,12 @@ public class SignUpController {
     public String addUser(@Valid @RequestBody SignUpRequestDto requestDto) {
         signUpService.addUser(requestDto);
         return "회원가입 성공";
+    }
+
+    @PostMapping("/user/verify")
+    public String verifyEmail(@RequestParam String email, @RequestParam String code) {
+        signUpService.verifyEmail(email, code);
+        return "이메일 인증 성공";
     }
 
     // 로그인
