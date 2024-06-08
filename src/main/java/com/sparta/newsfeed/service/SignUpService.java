@@ -3,6 +3,7 @@ package com.sparta.newsfeed.service;
 
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
+import com.sparta.newsfeed.dto.emaildto.EmailRequestDto;
 import com.sparta.newsfeed.entity.EmailVerification;
 import com.sparta.newsfeed.entity.User_entity.User;
 import com.sparta.newsfeed.entity.User_entity.UserStatus;
@@ -57,7 +58,7 @@ public class SignUpService {
         sendVerificationEmail(requestDto.getEmail(), code);
 
         userRepository.save(user);
-        return requestDto.getUsername() + "님 회원가입을 축하합니다";
+        return requestDto.getEmail() + " 로 발송된 인증코드를 확인해주세요.";
     }
 
     // 이메일 인증시 보낼 인증 코드
@@ -94,6 +95,10 @@ public class SignUpService {
             throw new IllegalArgumentException("이미 탈퇴한 사용자 입니다.");
         }
 
+        if (user.getUserStatus() == UserStatus.WAIT_EMAIL) {
+            throw new IllegalArgumentException("이메일 인증 확인이 되지 않습니다.");
+        }
+
         // 로그인 시 액세스 토큰 및 리프레시 토큰 생성 및 저장
         String accessToken = jwtTokenProvider.generateToken(user.getUserId());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
@@ -108,20 +113,22 @@ public class SignUpService {
 
     // 이메일 검사 후 상태 변경.
     @Transactional
-    public void verifyEmail(String email, String code) {
-        EmailVerification emailVerification = emailVerificationRepository.findByEmailAndCode(email, code)
+    public String verifyEmail(EmailRequestDto requestDto) {
+        EmailVerification emailVerification = emailVerificationRepository.findByEmailAndCode(requestDto.getEmail(), requestDto.getCode())
                 .orElseThrow(() -> new IllegalArgumentException("인증 코드가 일치하지 않습니다."));
 
         emailVerification.setVerified(true);
         emailVerificationRepository.save(emailVerification);
 
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("유저 이메일이 올바르지 않습니다."));
 
         // 유저 상태코드를 활성화로 변경
         user.setUserStatus(UserStatus.ACTIVE);
         // 변경된 상태코드를 유저 객체에 저장
         userRepository.save(user);
+
+        return "이메일 : "+requestDto.getEmail()+" 님의 인증이 완료되었습니다.";
     }
 
     // 로그아웃 메서드

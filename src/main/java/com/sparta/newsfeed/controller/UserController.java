@@ -4,6 +4,7 @@ package com.sparta.newsfeed.controller;
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserResponseDto;
+import com.sparta.newsfeed.dto.emaildto.EmailRequestDto;
 import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import com.sparta.newsfeed.service.SignUpService;
 import com.sparta.newsfeed.service.UserService;
@@ -29,9 +30,10 @@ public class UserController {
         return  signUpService.addUser(requestDto);
     }
 
+    // 이메일 인증
     @PostMapping("/user/verify")
-    public String verifyEmail(@RequestParam String email, @RequestParam String code) {
-        signUpService.verifyEmail(email, code);
+    public String verifyEmail(@Valid @RequestBody EmailRequestDto requestDto) {
+        signUpService.verifyEmail(requestDto);
         return "이메일 인증 성공";
     }
 
