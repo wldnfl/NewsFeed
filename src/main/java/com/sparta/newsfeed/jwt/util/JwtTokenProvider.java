@@ -148,4 +148,12 @@ public class JwtTokenProvider {
         cookie.setPath("/");
         response.addCookie(cookie);
     }
+
+    // 토큰 삭제
+    public void deleteCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie(HEADER_STRING, null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
 }
