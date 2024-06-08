@@ -33,12 +33,12 @@ public class UserService {
         // 비밀번호 변경 여부 확인 및 처리
         if (userRequestDto.getPassword() != null && !userRequestDto.getPassword().isEmpty()) {
             // 현재 비밀번호 확인
-            if (!passwordEncoder.matches(user.getPassword() , userRequestDto.getPassword())) {
+            if (!passwordEncoder.matches(userRequestDto.getPassword(),user.getPassword())) {
                 throw new IllegalArgumentException("유저 비밀번호가 올바르지 않습니다.");
             }
 
             // 새 비밀번호가 현재 비밀번호와 같은지 확인
-            if (passwordEncoder.matches(user.getPassword() , userRequestDto.getNewpassword())) {
+            if (passwordEncoder.matches(userRequestDto.getNewpassword(),user.getPassword())){
                 throw new IllegalArgumentException("새 비밀번호는 현재 비밀번호와 동일할 수 없습니다.");
             }
 

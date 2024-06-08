@@ -152,13 +152,14 @@ public class SignUpService {
     }
 
     // 회원 탈퇴 메서드
-    public String deleteUser( UserRequestDto userRequestDto,
+    @Transactional
+    public String deleteUser( LoginUpRequestDto loginUpRequestDto,
                               HttpServletRequest request,
                               HttpServletResponse response) {
         User user = jwtTokenProvider.getTokenUser(request);
         System.out.println("회원 탈퇴 요청을 받았습니다: " + user.getUsername());
         if (user == null)throw new IllegalArgumentException("유저 아이디가 올바르지 않습니다.");
-        if (!passwordEncoder.matches(userRequestDto.getPassword(), user.getPassword()))throw new IllegalArgumentException("유저 비밀번호가 올바르지 않습니다.");
+        if (!passwordEncoder.matches(loginUpRequestDto.getPassword(), user.getPassword()))throw new IllegalArgumentException("유저 비밀번호가 올바르지 않습니다.");
 
         if (user.getUserStatus() == UserStatus.WITHDRAWAL) {
             throw new IllegalArgumentException("이미 탈퇴한 사용자입니다.");

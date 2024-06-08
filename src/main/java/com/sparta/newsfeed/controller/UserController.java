@@ -51,10 +51,11 @@ public class UserController {
     // 회원 탈퇴
     @PostMapping("/user/delete")
     public String deleteUser(/*@RequestHeader("AccessToken") String accessToken,*/
-            UserRequestDto userRequestDto,
+            @RequestBody
+            LoginUpRequestDto loginUpRequestDto,
             HttpServletRequest request,
             HttpServletResponse response) {
-        return signUpService.deleteUser(userRequestDto,request,response);
+        return signUpService.deleteUser(loginUpRequestDto,request,response);
     }
 
     // 유저 프로필 가져오기
