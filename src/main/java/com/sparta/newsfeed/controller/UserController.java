@@ -9,22 +9,19 @@ import com.sparta.newsfeed.service.SignUpService;
 import com.sparta.newsfeed.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/user/profile")
+@RequiredArgsConstructor
+@RequestMapping("/api")
 public class UserController {
 
-    private final SignUpService signUpService;
     private UserService userService;
+    private final SignUpService signUpService;
     private final JwtTokenProvider jwtTokenProvider;
-
-    public UserController(SignUpService signUpService, JwtTokenProvider jwtTokenProvider) {
-        this.signUpService = signUpService;
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
 
     // 회원가입
     @PostMapping("/user/signup")
@@ -58,12 +55,12 @@ public class UserController {
     }
 
 
-    @GetMapping("/{userId}")
+    @GetMapping("user/profile/{userId}")
     public UserResponseDto getUserProfile(@PathVariable Long userId) throws Exception {
         return userService.getUserProfile(userId);
     }
 
-    @PatchMapping("/{userId}")
+    @PatchMapping("user/profile/{userId}")
     public UserResponseDto updateUserProfile(@PathVariable Long userId,
                                           @RequestBody UserRequestDto userRequestDto,
                                           Principal principal) throws Exception {
