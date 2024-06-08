@@ -62,7 +62,6 @@ public class SignUpService {
             throw new IllegalArgumentException("이미 탈퇴한 사용자 입니다.");
         }
 
-
         // 로그인 시 액세스 토큰 및 리프레시 토큰 생성 및 저장
         String accessToken = jwtTokenProvider.generateToken(user.getUserId());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
@@ -90,7 +89,7 @@ public class SignUpService {
             User user = userRepository.findByUserId(userId);
             if (user != null) {
                 System.out.println("로그아웃 요청 사용자: " + userId);
-                user.setRefresh_token(null); // 로그아웃시 리프레쉬 토큰 초기화 하기.
+                user.setRefresh_token(null); // 로그아웃시 리프레쉬 토큰 null 하기.
                 userRepository.save(user);
                 System.out.println("리프레쉬 토큰 null 완료: " + userId);
             } else {

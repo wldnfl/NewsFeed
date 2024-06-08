@@ -2,7 +2,7 @@ package com.sparta.newsfeed.controller;
 
 import com.sparta.newsfeed.dto.UserDto.LoginRequestDto;
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
-import com.sparta.newsfeed.dto.dtos.message.MessageResponseDto;
+import com.sparta.newsfeed.dto.message.MessageResponseDto;
 import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import com.sparta.newsfeed.service.SignUpService;
 import jakarta.servlet.http.Cookie;
