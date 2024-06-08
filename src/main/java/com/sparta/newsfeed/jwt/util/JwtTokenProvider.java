@@ -25,7 +25,7 @@ import java.util.Map;
 public class JwtTokenProvider {
 
     // 헤더 문자열 상수
-    public static final String HEADER_STRING = "Authorization";
+    public static final String HEADER_STRING = "AccessToken";
 
     private final SecretKey secretKey; // JWT 서명을 위한 비밀 키
     private final long accessExpiration; // 액세스 토큰 만료 시간 (밀리초)
@@ -141,8 +141,10 @@ public class JwtTokenProvider {
         token = "Bearer " + token;
         token = URLEncoder.encode(token, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
 
+
         // 토큰을 쿠키에 추가하고 응답에 설정
         Cookie cookie = new Cookie(HEADER_STRING, token);
+        response.addHeader(HEADER_STRING, token);
         cookie.setPath("/");
         response.addCookie(cookie);
     }

@@ -1,4 +1,4 @@
-package com.sparta.newsfeed.jwt.config;
+package com.sparta.newsfeed.config;
 
 
 import com.sparta.newsfeed.jwt.filter.JwtAuthenticationFilter;

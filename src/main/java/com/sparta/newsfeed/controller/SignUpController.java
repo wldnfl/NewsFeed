@@ -32,41 +32,21 @@ public class SignUpController {
     @PostMapping("/user/login")
     public MessageResponseDto loginUser(@Valid @RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
         Map<String, String> tokens = signUpService.loginUser(requestDto, response);
-        createAccessTokenCookie(response, tokens.get("accessToken"));
         return new MessageResponseDto("로그인 성공");
     }
 
     // 로그아웃
     @PostMapping("/user/logout")
-    public MessageResponseDto logoutUser(@RequestHeader("Authorization") String accessToken, HttpServletResponse response) {
+    public MessageResponseDto logoutUser(@RequestHeader("AccessToken") String accessToken, HttpServletResponse response) {
         signUpService.logoutUser(accessToken.replace("Bearer ", ""));
-        deleteAccessTokenCookie(response);
         return new MessageResponseDto("로그아웃 성공");
     }
 
     // 회원 탈퇴
     @PostMapping("/user/delete")
-    public MessageResponseDto deleteUser(@RequestHeader("Authorization") String accessToken, @Valid @RequestBody SignUpRequestDto requestDto) {
+    public MessageResponseDto deleteUser(@RequestHeader("AccessToken") String accessToken, @Valid @RequestBody SignUpRequestDto requestDto) {
         String userId = jwtTokenProvider.extractUsername(accessToken.replace("Bearer ", ""));
         signUpService.deleteUser(userId, requestDto.getPassword());
         return new MessageResponseDto("회원탈퇴 성공");
-    }
-
-    // 쿠키 생성 및 설정
-    private void createAccessTokenCookie(HttpServletResponse response, String accessToken) {
-        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-        accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(1800); // 30분
-        response.addCookie(accessTokenCookie);
-    }
-
-    // 쿠키 삭제
-    private void deleteAccessTokenCookie(HttpServletResponse response) {
-        Cookie accessTokenCookie = new Cookie("accessToken", null);
-        accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(0); // 쿠키 삭제
-        response.addCookie(accessTokenCookie);
     }
 }
