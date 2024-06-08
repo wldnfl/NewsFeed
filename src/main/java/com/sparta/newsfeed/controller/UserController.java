@@ -25,7 +25,7 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
 
     // 회원가입
-    @PostMapping("/user/signup")
+    @PostMapping("/user/sign")
     public String addUser(@Valid @RequestBody SignUpRequestDto requestDto) {
         return  signUpService.addUser(requestDto);
     }
@@ -55,7 +55,6 @@ public class UserController {
             UserRequestDto userRequestDto, HttpServletResponse response) {
         return signUpService.deleteUser(userRequestDto,response);
     }
-
 
     @GetMapping("user/profile/{userId}")
     public UserResponseDto getUserProfile(@PathVariable Long userId) throws Exception {
