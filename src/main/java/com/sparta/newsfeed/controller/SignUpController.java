@@ -27,6 +27,7 @@ public class SignUpController {
         return "회원가입 성공";
     }
 
+    // 이메일 인증
     @PostMapping("/user/verify")
     public String verifyEmail(@RequestParam String email, @RequestParam String code) {
         signUpService.verifyEmail(email, code);

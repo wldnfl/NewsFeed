@@ -5,9 +5,11 @@ package com.sparta.newsfeed.service;
 import com.sparta.newsfeed.dto.UserDto.LoginRequestDto;
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
+import com.sparta.newsfeed.entity.EmailVerification;
 import com.sparta.newsfeed.entity.User_entity.User;
 import com.sparta.newsfeed.entity.User_entity.UserStatus;
 import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
+import com.sparta.newsfeed.repository.EmailVerificationRepository;
 import com.sparta.newsfeed.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Validation;
@@ -16,9 +18,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 @Service
 @Getter
@@ -29,6 +33,8 @@ public class SignUpService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
     private final JwtTokenProvider jwtTokenProvider;
+    private final EmailService emailService;
+    private final EmailVerificationRepository emailVerificationRepository;
     private SignUpRequestDto requestDto;
 
     // 유저 회원가입
@@ -42,10 +48,36 @@ public class SignUpService {
                 throw new IllegalArgumentException("탈퇴한 사용자 ID입니다.");
             }
         }
-
         User user = new User(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+        user.setUserStatus(UserStatus.WAIT_EMAIL); // 이메일 인증을 하기 전에는 이메일 인증을 기다리는 상태코드.
+
+        // 인증코드 생성하여 이메일 전송
+        String code = generateVerificationCode();
+        EmailVerification emailVerification = new EmailVerification(requestDto.getEmail(), code);
+        emailVerificationRepository.save(emailVerification);
+        sendVerificationEmail(requestDto.getEmail(), code);
+
         return userRepository.save(user);
+    }
+
+    // 이메일 인증시 보낼 인증 코드
+    private String generateVerificationCode() {
+        // 랜덤 돌리기
+        Random random = new Random();
+        int code = 100000 + random.nextInt(900000);
+        return String.valueOf(code);
+    }
+
+    // 이메일
+    private void sendVerificationEmail(String email, String code) {
+        String subject = "이메일 인증 코드";
+        String text = "인증 코드 번호 : " + code;
+        try {
+            emailService.sendEmail(email, subject, text);
+        } catch (Exception e) {
+            throw new RuntimeException("이메일 인증에 실패했습니다.", e);
+        }
     }
 
     // 유저 로그인
@@ -77,6 +109,24 @@ public class SignUpService {
         tokens.put("refreshToken", refreshToken);
 
         return tokens;
+    }
+
+    // 이메일 검사 후 상태 변경.
+    @Transactional
+    public void verifyEmail(String email, String code) {
+        EmailVerification emailVerification = emailVerificationRepository.findByEmailAndCode(email, code)
+                .orElseThrow(() -> new IllegalArgumentException("인증 코드가 일치하지 않습니다."));
+
+        emailVerification.setVerified(true);
+        emailVerificationRepository.save(emailVerification);
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("유저 이메일이 올바르지 않습니다."));
+
+        // 유저 상태코드를 활성화로 변경
+        user.setUserStatus(UserStatus.ACTIVE);
+        // 변경된 상태코드를 유저 객체에 저장
+        userRepository.save(user);
     }
 
     // 로그아웃 메서드

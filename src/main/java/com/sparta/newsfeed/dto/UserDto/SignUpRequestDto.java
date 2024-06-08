@@ -27,7 +27,7 @@ public class SignUpRequestDto {
 
     //이름
     @NotBlank(message = " username 비워둘 수 없습니다.")
-    @Pattern(regexp = "^[\\w]+$", message = "username 공백을 포함할 수 없습니다.")
+    @Pattern(regexp = "^[\\s\\S]*$", message = "username 공백을 포함할 수 없습니다.")
     private String username = "username";
 
     //이매일
