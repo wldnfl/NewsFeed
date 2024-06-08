@@ -2,6 +2,7 @@ package com.sparta.newsfeed.service;
 
 
 
+import com.sparta.newsfeed.dto.UserDto.LoginRequestDto;
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.entity.User_entity.User;
 import com.sparta.newsfeed.entity.User_entity.UserStatus;
@@ -47,7 +48,7 @@ public class SignUpService {
     }
 
     // 유저 로그인
-    public Map<String, String> loginUser(SignUpRequestDto requestDto , HttpServletResponse response) {
+    public Map<String, String> loginUser(LoginRequestDto requestDto , HttpServletResponse response) {
         User user = userRepository.findByUserId(requestDto.getUserId());
         if (user == null) {
             throw new IllegalArgumentException("유저 아이디가 올바르지 않습니다.");

@@ -1,5 +1,6 @@
 package com.sparta.newsfeed.controller;
 
+import com.sparta.newsfeed.dto.UserDto.LoginRequestDto;
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.dtos.message.MessageResponseDto;
 import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
@@ -29,7 +30,7 @@ public class SignUpController {
 
     // 로그인
     @PostMapping("/user/login")
-    public MessageResponseDto loginUser(@Valid @RequestBody SignUpRequestDto requestDto, HttpServletResponse response) {
+    public MessageResponseDto loginUser(@Valid @RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
         Map<String, String> tokens = signUpService.loginUser(requestDto, response);
         createAccessTokenCookie(response, tokens.get("accessToken"));
         return new MessageResponseDto("로그인 성공");
