@@ -9,6 +9,6 @@ public class UserRequestDto {
     private String email;
     private String one_liner;
     private String password;
-    private String currentPassword;
+    private String newpassword;
 
 }
