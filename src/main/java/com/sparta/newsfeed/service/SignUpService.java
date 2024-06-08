@@ -29,7 +29,7 @@ public class SignUpService {
     private final JwtTokenProvider jwtTokenProvider;
     private SignUpRequestDto requestDto;
 
-    // 유저 회원가입 메서드
+    // 유저 회원가입
     public User addUser(SignUpRequestDto requestDto) {
         this.requestDto = requestDto;
         User existingUser = userRepository.findByUserId(requestDto.getUserId());
@@ -46,7 +46,7 @@ public class SignUpService {
         return userRepository.save(user);
     }
 
-    // 유저 로그인 메서드
+    // 유저 로그인
     public Map<String, String> loginUser(SignUpRequestDto requestDto , HttpServletResponse response) {
         User user = userRepository.findByUserId(requestDto.getUserId());
         if (user == null) {
