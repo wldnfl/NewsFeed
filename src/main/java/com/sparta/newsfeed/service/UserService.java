@@ -28,7 +28,7 @@ public class UserService {
 
     // 프로필 변경
     @Transactional
-    public UserResponseDto updateUserProfile(HttpServletRequest request, UserRequestDto userRequestDto) {
+    public String updateUserProfile(HttpServletRequest request, UserRequestDto userRequestDto) {
         User user = jwtTokenProvider.getTokenUser(request);
         // 비밀번호 변경 여부 확인 및 처리
         if (userRequestDto.getPassword() != null && !userRequestDto.getPassword().isEmpty()) {
@@ -43,7 +43,8 @@ public class UserService {
             }
 
             // 새 비밀번호를 설정
-            String newPassword = userRequestDto.getPassword();
+            //아 이거 new 페스워드가 아니라 기존 패스워드 가져온거네
+            String newPassword = userRequestDto.getNewpassword();
             // 비밀번호 형식이 올바르지 않은 경우 예외 처리
             if (!isValidPasswordFormat(newPassword)) {
                 throw new IllegalArgumentException("올바르지 않은 비밀번호 형식입니다");
@@ -55,8 +56,8 @@ public class UserService {
         if(userRequestDto.getUsername()!=null)user.setUsername(userRequestDto.getUsername());
         if(userRequestDto.getOne_liner()!=null)user.setOne_liner(userRequestDto.getOne_liner());
 
-        userRepository.save(user);
-        return new UserResponseDto(user);
+
+        return "수정완료 'Get' 으로 확인해 주세요";
     }
 
     // 비밀번호 형식이 올바른지 확인하는 메서드

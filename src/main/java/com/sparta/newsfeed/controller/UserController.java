@@ -6,7 +6,6 @@ import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserResponseDto;
 import com.sparta.newsfeed.dto.emaildto.EmailRequestDto;
-import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import com.sparta.newsfeed.service.SignUpService;
 import com.sparta.newsfeed.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -66,7 +65,7 @@ public class UserController {
 
     // 유저 프로필 수정
     @PatchMapping("/user/profile")
-    public UserResponseDto updateUserProfile(HttpServletRequest request, @RequestBody UserRequestDto userRequestDto){
+    public String updateUserProfile(HttpServletRequest request, @RequestBody UserRequestDto userRequestDto){
         return userService.updateUserProfile(request,userRequestDto);
     }
 
