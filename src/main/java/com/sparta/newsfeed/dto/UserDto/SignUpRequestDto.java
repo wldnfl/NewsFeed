@@ -26,14 +26,17 @@ public class SignUpRequestDto {
     private String password;
 
     //이름
-    private String username;
+    @NotBlank(message = " username 비워둘 수 없습니다.")
+    private String username = "username";
 
     //이매일
     @Email
+    @NotBlank(message = " email 비워둘 수 없습니다.")
     private String email;
 
     //한줄 소개
-    private String one_liner;
+    @NotBlank(message = " one_liner 비워둘 수 없습니다.")
+    private String one_liner = "one_liner ";
 
     //유저 상태 코드
     private UserStatus userStatus = UserStatus.ACTIVE;

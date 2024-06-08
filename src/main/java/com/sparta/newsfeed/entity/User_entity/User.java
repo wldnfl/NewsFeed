@@ -23,6 +23,7 @@ public class User extends Timer {
     //아이디 비번
     @Column(unique = true)
     private String userId;
+    // 비밀번호
     private String password;
     //이름
     private String username;

@@ -4,6 +4,7 @@ package com.sparta.newsfeed.service;
 
 import com.sparta.newsfeed.dto.UserDto.LoginRequestDto;
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
+import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.entity.User_entity.User;
 import com.sparta.newsfeed.entity.User_entity.UserStatus;
 import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
@@ -48,7 +49,7 @@ public class SignUpService {
     }
 
     // 유저 로그인
-    public Map<String, String> loginUser(LoginRequestDto requestDto , HttpServletResponse response) {
+    public Map<String, String> loginUser(SignUpRequestDto requestDto , HttpServletResponse response) {
         User user = userRepository.findByUserId(requestDto.getUserId());
         if (user == null) {
             throw new IllegalArgumentException("유저 아이디가 올바르지 않습니다.");
@@ -84,7 +85,7 @@ public class SignUpService {
         try {
 /*            User user = userRepository.findByUserId(userId);
             user.setRefresh_token(null); // 로그아웃시 리프레쉬 토큰 null 하기.
-            userRepository.save(user);*/
+            userRepository.save(user); */
         } catch (Exception e) {
             System.out.println("로그아웃 과정에서 예외 발생: " + e.getMessage());
             throw e;
