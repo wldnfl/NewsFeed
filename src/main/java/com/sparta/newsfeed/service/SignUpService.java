@@ -81,19 +81,9 @@ public class SignUpService {
     // 로그아웃시 리프레쉬 토큰 없애기.
     public void logoutUser(String token) {
         try {
-            System.out.println("로그아웃 요청을 받았습니다: " + token);
-
-            String userId = jwtTokenProvider.extractUsername(token);
-            System.out.println("로그아웃할 사용자 ID: " + userId);
-            User user = userRepository.findByUserId(userId);
-            if (user != null) {
-                System.out.println("로그아웃 요청 사용자: " + userId);
-                user.setRefresh_token(null); // 로그아웃시 리프레쉬 토큰 null 하기.
-                userRepository.save(user);
-                System.out.println("리프레쉬 토큰 null 완료: " + userId);
-            } else {
-                System.out.println("사용자를 찾을 수 없습니다: " + userId);
-            }
+/*            User user = userRepository.findByUserId(userId);
+            user.setRefresh_token(null); // 로그아웃시 리프레쉬 토큰 null 하기.
+            userRepository.save(user);*/
         } catch (Exception e) {
             System.out.println("로그아웃 과정에서 예외 발생: " + e.getMessage());
             throw e;
@@ -120,4 +110,6 @@ public class SignUpService {
         userRepository.save(user);
         System.out.println("사용자 " + userId + "가 성공적으로 탈퇴되었습니다.");
     }
+
+
 }
