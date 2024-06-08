@@ -2,13 +2,13 @@ package com.sparta.newsfeed.service;
 
 
 
-import com.sparta.newsfeed.dto.UserDto.LoginRequestDto;
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.entity.User_entity.User;
 import com.sparta.newsfeed.entity.User_entity.UserStatus;
 import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import com.sparta.newsfeed.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -32,7 +32,7 @@ public class SignUpService {
     private SignUpRequestDto requestDto;
 
     // 유저 회원가입
-    public User addUser(SignUpRequestDto requestDto) {
+    public String addUser(SignUpRequestDto requestDto) {
         this.requestDto = requestDto;
         User existingUser = userRepository.findByUserId(requestDto.getUserId());
         if (existingUser != null) {
@@ -45,11 +45,12 @@ public class SignUpService {
 
         User user = new User(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
-        return userRepository.save(user);
+        userRepository.save(user);
+        return requestDto.getUsername() + "님 회원가입을 축하합니다";
     }
 
     // 유저 로그인
-    public Map<String, String> loginUser(SignUpRequestDto requestDto , HttpServletResponse response) {
+    public String loginUser(SignUpRequestDto requestDto , HttpServletResponse response) {
         User user = userRepository.findByUserId(requestDto.getUserId());
         if (user == null) {
             throw new IllegalArgumentException("유저 아이디가 올바르지 않습니다.");
@@ -72,35 +73,33 @@ public class SignUpService {
         user.setRefresh_token(refreshToken);
         userRepository.save(user);
 
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", accessToken);
-        tokens.put("refreshToken", refreshToken);
-
-        return tokens;
+        return "어서오세요"+requestDto.getUsername() + "님 로그인이 완료되었습니다";
     }
 
     // 로그아웃 메서드
     // 로그아웃시 리프레쉬 토큰 없애기.
-    public void logoutUser(String token) {
+    public String logoutUser(HttpServletResponse response) {
         try {
-/*            User user = userRepository.findByUserId(userId);
+            User user = jwtTokenProvider.getTokenUser((HttpServletRequest) response);
             user.setRefresh_token(null); // 로그아웃시 리프레쉬 토큰 null 하기.
-            userRepository.save(user); */
+            userRepository.save(user);
+            jwtTokenProvider.deleteCookie(response);
         } catch (Exception e) {
             System.out.println("로그아웃 과정에서 예외 발생: " + e.getMessage());
             throw e;
         }
+        return "로그아웃 완료";
     }
 
     // 회원 탈퇴 메서드
-    public void deleteUser(String userId, String password) {
-        System.out.println("회원 탈퇴 요청을 받았습니다: " + userId);
-        User user = userRepository.findByUserId(userId);
+    public String deleteUser( UserRequestDto userRequestDto,HttpServletResponse response) {
+        User user = jwtTokenProvider.getTokenUser((HttpServletRequest) response);
+        System.out.println("회원 탈퇴 요청을 받았습니다: " + user.getUsername());
         if (user == null) {
             throw new IllegalArgumentException("유저 아이디가 올바르지 않습니다.");
         }
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("유저 비밀번호가 올바르지 않습니다.");
         }
 
@@ -110,7 +109,8 @@ public class SignUpService {
 
         user.setUserStatus(UserStatus.WITHDRAWAL);
         userRepository.save(user);
-        System.out.println("사용자 " + userId + "가 성공적으로 탈퇴되었습니다.");
+        System.out.println("사용자 " + user.getUsername() + "가 성공적으로 탈퇴되었습니다.");
+        return "회원탈퇴가 완료되었습니다 " + user.getUsername() + "님\n 안녕을 기원합니다.";
     }
 
 
