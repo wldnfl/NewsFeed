@@ -26,8 +26,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         System.out.println("입력받은 URI : " + request.getRequestURI());
         // 헤더에서 토큰 가져오기
         String authorizationHeader = jwtTokenProvider.getStringtoken_1(request);
-        // TODO : 여기 변수 사용 안하는거같아요 정운님
-        String header =request.getHeader("AccessToken");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);

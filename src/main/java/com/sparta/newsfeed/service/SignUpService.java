@@ -1,6 +1,7 @@
 package com.sparta.newsfeed.service;
 
 
+import com.sparta.newsfeed.dto.UserDto.LoginUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.dto.emaildto.EmailRequestDto;
@@ -81,15 +82,10 @@ public class SignUpService {
     }
 
     // 유저 로그인
-    public String loginUser(SignUpRequestDto requestDto , HttpServletResponse response) {
+    public String loginUser(LoginUpRequestDto requestDto , HttpServletResponse response) {
         User user = userRepository.findByUserId(requestDto.getUserId());
-        if (user == null) {
-            throw new IllegalArgumentException("유저 아이디가 올바르지 않습니다.");
-        }
 
-        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("유저 비밀번호가 올바르지 않습니다.");
-        }
+        userlogin(requestDto, user);
 
         if (user.getUserStatus() == UserStatus.WITHDRAWAL) {
             throw new IllegalArgumentException("이미 탈퇴한 사용자 입니다.");
@@ -102,13 +98,22 @@ public class SignUpService {
         // 로그인 시 액세스 토큰 및 리프레시 토큰 생성 및 저장
         String accessToken = jwtTokenProvider.generateToken(user.getUserId());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
-        jwtTokenProvider.addToken(accessToken,  response);
         //토큰 자동 저장
-
+        jwtTokenProvider.addToken(accessToken,  response);
         user.setRefresh_token(refreshToken);
         userRepository.save(user);
 
-        return "어서오세요"+requestDto.getUsername() + "님 로그인이 완료되었습니다";
+        return "어서오세요 "+user.getUsername() + "님 로그인이 완료되었습니다";
+    }
+
+    private void userlogin(LoginUpRequestDto requestDto, User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("유저 아이디가 올바르지 않습니다.");
+        }
+
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("유저 비밀번호가 올바르지 않습니다.");
+        }
     }
 
     // 이메일 검사 후 상태 변경.
@@ -133,9 +138,9 @@ public class SignUpService {
 
     // 로그아웃 메서드
     // 로그아웃시 리프레쉬 토큰 없애기.
-    public String logoutUser(HttpServletResponse response) {
+    public String logoutUser(HttpServletRequest request, HttpServletResponse response) {
         try {
-            User user = jwtTokenProvider.getTokenUser((HttpServletRequest) response);
+            User user = jwtTokenProvider.getTokenUser(request);
             user.setRefresh_token(null); // 로그아웃시 리프레쉬 토큰 null 하기.
             userRepository.save(user);
             jwtTokenProvider.deleteCookie(response);
@@ -147,22 +152,20 @@ public class SignUpService {
     }
 
     // 회원 탈퇴 메서드
-    public String deleteUser( UserRequestDto userRequestDto,HttpServletResponse response) {
-        User user = jwtTokenProvider.getTokenUser((HttpServletRequest) response);
+    public String deleteUser( UserRequestDto userRequestDto,
+                              HttpServletRequest request,
+                              HttpServletResponse response) {
+        User user = jwtTokenProvider.getTokenUser(request);
         System.out.println("회원 탈퇴 요청을 받았습니다: " + user.getUsername());
-        if (user == null) {
-            throw new IllegalArgumentException("유저 아이디가 올바르지 않습니다.");
-        }
-
-        if (!passwordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("유저 비밀번호가 올바르지 않습니다.");
-        }
+        if (user == null)throw new IllegalArgumentException("유저 아이디가 올바르지 않습니다.");
+        if (!passwordEncoder.matches(userRequestDto.getPassword(), user.getPassword()))throw new IllegalArgumentException("유저 비밀번호가 올바르지 않습니다.");
 
         if (user.getUserStatus() == UserStatus.WITHDRAWAL) {
             throw new IllegalArgumentException("이미 탈퇴한 사용자입니다.");
         }
 
         user.setUserStatus(UserStatus.WITHDRAWAL);
+        jwtTokenProvider.deleteCookie(response);
         userRepository.save(user);
         System.out.println("사용자 " + user.getUsername() + "가 성공적으로 탈퇴되었습니다.");
         return "회원탈퇴가 완료되었습니다 " + user.getUsername() + "님\n 안녕을 기원합니다.";

@@ -1,49 +1,60 @@
 package com.sparta.newsfeed.service;
 
+
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserResponseDto;
 import com.sparta.newsfeed.entity.User_entity.User;
+import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import com.sparta.newsfeed.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 유저 프로필 가져오기
-    public UserResponseDto getUserProfile(Long userId){
-        User user = userRepository.findById(userId).get();
+    public UserResponseDto getUserProfile(HttpServletRequest request){
+        User user = jwtTokenProvider.getTokenUser(request);
         return new UserResponseDto(user);
     }
 
     // 프로필 변경
-    public UserResponseDto updateUserProfile(Long userId, UserRequestDto userRequestDto) throws Exception {
-        User user = userRepository.findById(userId).orElseThrow(() -> new Exception("User not found"));
-
+    @Transactional
+    public UserResponseDto updateUserProfile(HttpServletRequest request, UserRequestDto userRequestDto) {
+        User user = jwtTokenProvider.getTokenUser(request);
         // 비밀번호 변경 여부 확인 및 처리
         if (userRequestDto.getPassword() != null && !userRequestDto.getPassword().isEmpty()) {
             // 현재 비밀번호 확인
-            if (!passwordEncoder.matches(userRequestDto.getCurrentPassword(), user.getPassword())) {
-                throw new Exception("현재 비밀번호가 올바르지 않습니다.");
+            if (!passwordEncoder.matches(user.getPassword() , userRequestDto.getPassword())) {
+                throw new IllegalArgumentException("유저 비밀번호가 올바르지 않습니다.");
             }
+
             // 새 비밀번호가 현재 비밀번호와 같은지 확인
-            if (passwordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
-                throw new Exception("새 비밀번호는 현재 비밀번호와 동일할 수 없습니다.");
+            if (passwordEncoder.matches(user.getPassword() , userRequestDto.getNewpassword())) {
+                throw new IllegalArgumentException("새 비밀번호는 현재 비밀번호와 동일할 수 없습니다.");
             }
+
             // 새 비밀번호를 설정
             String newPassword = userRequestDto.getPassword();
             // 비밀번호 형식이 올바르지 않은 경우 예외 처리
             if (!isValidPasswordFormat(newPassword)) {
-                throw new Exception("올바르지 않은 비밀번호 형식입니다");
+                throw new IllegalArgumentException("올바르지 않은 비밀번호 형식입니다");
             }
             user.setPassword(passwordEncoder.encode(newPassword));
+            System.out.println("비밀번호 변경 완료");
         }
-        user.update(userRequestDto);
+        if(userRequestDto.getEmail()!=null)user.setEmail(userRequestDto.getEmail());
+        if(userRequestDto.getUsername()!=null)user.setUsername(userRequestDto.getUsername());
+        if(userRequestDto.getOne_liner()!=null)user.setOne_liner(userRequestDto.getOne_liner());
+
         userRepository.save(user);
         return new UserResponseDto(user);
     }
