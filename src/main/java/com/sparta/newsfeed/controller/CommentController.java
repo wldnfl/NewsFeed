@@ -33,6 +33,32 @@ public class CommentController {
         return commentService.board_comment(boardId);
     }
 
+    @GetMapping("/{boardId}/comment{commentid}")
+    @Operation(summary = "개시판의 댓글 조회")
+    public CommentResponseDto board_comment_view(
+            @PathVariable Long boardId,
+            @PathVariable Long commentid){
+        return commentService.board_comment_view(boardId,commentid);
+    }
+
+    @GetMapping("/{boardId}/comment/{commentid}/like")
+    @Operation(summary = "개시판의 특정 댓글 좋아요")
+    public CommentResponseDto board_comment_like(
+            HttpServletRequest servletRequest,
+            @PathVariable Long boardId,
+            @PathVariable Long commentid){
+        return commentService.board_comment_like(servletRequest,boardId,commentid);
+    }
+
+    @GetMapping("/{boardId}/comment/{commentid}/nolike")
+    @Operation(summary = "개시판의 특정 댓글 좋아요 취소")
+    public CommentResponseDto board_comment_nolike(
+            HttpServletRequest servletRequest,
+            @PathVariable Long boardId,
+            @PathVariable Long commentid){
+        return commentService.board_comment_nolike(servletRequest,boardId,commentid);
+    }
+
     @PatchMapping("/{boardId}/comment/{commentId}")
     @Operation(summary = "댓글 수정")
     public String update_comment(

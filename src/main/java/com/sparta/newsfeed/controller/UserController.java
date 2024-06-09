@@ -6,6 +6,7 @@ import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserResponseDto;
 import com.sparta.newsfeed.dto.emaildto.EmailRequestDto;
+import com.sparta.newsfeed.dto.emaildto.ReVerifyEMailRequestDto;
 import com.sparta.newsfeed.service.SignUpService;
 import com.sparta.newsfeed.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,6 +34,12 @@ public class UserController {
     public String verifyEmail(@Valid @RequestBody EmailRequestDto requestDto) {
         signUpService.verifyEmail(requestDto);
         return "이메일 인증 성공";
+    }
+
+    // 이메일 인증 시간 초과시 인증번호 재요청 api
+    @PostMapping("/user/reverify")
+    public String reverifyEmail(@Valid @RequestBody ReVerifyEMailRequestDto requestDto) {
+        return signUpService.reverifyEmail(requestDto);
     }
 
     // 로그인
