@@ -5,6 +5,7 @@ import com.sparta.newsfeed.dto.UserDto.LoginUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.dto.emaildto.EmailRequestDto;
+import com.sparta.newsfeed.dto.emaildto.ReVerifyEMailRequestDto;
 import com.sparta.newsfeed.entity.EmailVerification;
 import com.sparta.newsfeed.entity.User_entity.User;
 import com.sparta.newsfeed.entity.User_entity.UserStatus;
@@ -72,7 +73,7 @@ public class SignUpService {
         return String.valueOf(code);
     }
 
-    // 이메일
+    // 이메일 발송 양식
     private void sendVerificationEmail(String email, String code) {
         String subject = "이메일 인증 코드";
         String text = "인증 코드 번호 : " + code;
@@ -82,6 +83,66 @@ public class SignUpService {
             throw new RuntimeException("이메일 발송에 실패했습니다.", e);
         }
     }
+
+    // 이메일 인증 시간 초과시 이메일 인증 재요청 메서드
+    @Transactional
+    public String reverifyEmail(ReVerifyEMailRequestDto requestDto) {
+        User user = userRepository.findByEmail(requestDto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 찾을 수 없습니다" + requestDto.getEmail()));
+
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("회원가입시 입력한 비밀번호와 일치하지 않습니다.");
+        }
+
+        // 새로운 인증코드 만들기
+        String code = generateVerificationCode();
+
+        // DB에 이메일 인증 정보 교체
+        EmailVerification emailVerification = emailVerificationRepository.findByEmail(requestDto.getEmail())
+                .orElseGet(() -> new EmailVerification(requestDto.getEmail(), code));
+
+        emailVerification.setCode(code);
+        emailVerificationRepository.save(emailVerification);
+
+        // 이메일 발송 시간초기화
+        user.setSend_email_time(LocalDateTime.now());
+        userRepository.save(user);
+
+        // 인증 코드 이메일로 전송
+        sendVerificationEmail(requestDto.getEmail(), code);
+
+        return requestDto.getEmail() + "로 발송한 인증 코드를 확인해 주세요.";
+
+    }
+
+    // 이메일 검사 후 상태 변경.
+    @Transactional
+    public String verifyEmail(EmailRequestDto requestDto) {
+        EmailVerification emailVerification = emailVerificationRepository.findByEmailAndCode(requestDto.getEmail(), requestDto.getCode())
+                .orElseThrow(() -> new IllegalArgumentException("인증 코드가 일치하지 않습니다."));
+
+        emailVerification.setVerified(true);
+        emailVerificationRepository.save(emailVerification);
+
+        User user = userRepository.findByEmail(requestDto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("유저 이메일이 올바르지 않습니다."));
+
+        // 이메일 제한시간 추가.
+        if (user.getSend_email_time().plusSeconds(30).isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(user.getEmail() +"로 발송한 이메일의 제한 시간이 만료되었습니다.");
+        }
+
+        emailVerification.setVerified(true);
+        emailVerificationRepository.save(emailVerification);
+
+        // 유저 상태코드를 활성화로 변경
+        user.setUserStatus(UserStatus.ACTIVE);
+        // 변경된 상태코드를 유저 객체에 저장
+        userRepository.save(user);
+
+        return "이메일 : "+requestDto.getEmail()+" 님의 인증이 완료되었습니다.";
+    }
+
 
     // 유저 로그인
     public String loginUser(LoginUpRequestDto requestDto , HttpServletResponse response) {
@@ -116,31 +177,6 @@ public class SignUpService {
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("유저 비밀번호가 올바르지 않습니다.");
         }
-    }
-
-    // 이메일 검사 후 상태 변경.
-    @Transactional
-    public String verifyEmail(EmailRequestDto requestDto) {
-        EmailVerification emailVerification = emailVerificationRepository.findByEmailAndCode(requestDto.getEmail(), requestDto.getCode())
-                .orElseThrow(() -> new IllegalArgumentException("인증 코드가 일치하지 않습니다."));
-
-        emailVerification.setVerified(true);
-        emailVerificationRepository.save(emailVerification);
-
-        User user = userRepository.findByEmail(requestDto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("유저 이메일이 올바르지 않습니다."));
-
-        // 이메일 제한시간 추가.
-        if (user.getSend_email_time().plusSeconds(30).isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException(user.getEmail() +"로 발송한 이메일의 제한 시간이 만료되었습니다.");
-        }
-
-        // 유저 상태코드를 활성화로 변경
-        user.setUserStatus(UserStatus.ACTIVE);
-        // 변경된 상태코드를 유저 객체에 저장
-        userRepository.save(user);
-
-        return "이메일 : "+requestDto.getEmail()+" 님의 인증이 완료되었습니다.";
     }
 
     // 로그아웃 메서드
@@ -178,6 +214,4 @@ public class SignUpService {
         System.out.println("사용자 " + user.getUsername() + "가 성공적으로 탈퇴되었습니다.");
         return "회원탈퇴가 완료되었습니다 " + user.getUsername() + "님\n 안녕을 기원합니다.";
     }
-
-
 }
