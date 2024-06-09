@@ -21,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Random;
 
 @Service
@@ -51,6 +52,7 @@ public class SignUpService {
         User user = new User(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
         user.setUserStatus(UserStatus.WAIT_EMAIL); // 이메일 인증을 하기 전에는 이메일 인증을 기다리는 상태코드.
+        user.setSend_email_time(LocalDateTime.now()); // 이메일 발송 시간 기록.
 
         // 인증코드 생성하여 이메일 전송
         String code = generateVerificationCode();
@@ -77,7 +79,7 @@ public class SignUpService {
         try {
             emailService.sendEmail(email, subject, text);
         } catch (Exception e) {
-            throw new RuntimeException("이메일 인증에 실패했습니다.", e);
+            throw new RuntimeException("이메일 발송에 실패했습니다.", e);
         }
     }
 
@@ -127,6 +129,11 @@ public class SignUpService {
 
         User user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("유저 이메일이 올바르지 않습니다."));
+
+        // 이메일 제한시간 추가.
+        if (user.getSend_email_time().plusSeconds(30).isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(user.getEmail() +"로 발송한 이메일의 제한 시간이 만료되었습니다.");
+        }
 
         // 유저 상태코드를 활성화로 변경
         user.setUserStatus(UserStatus.ACTIVE);

@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -33,6 +34,9 @@ public class User extends Timer {
     private String one_liner;
     //리프레쉬 토큰
     private String refresh_token;
+
+    // 이메일 발송 시간 기록.
+    private LocalDateTime send_email_time;
 
     //개시판
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
