@@ -7,6 +7,7 @@ import com.sparta.newsfeed.dto.boardDto.BoardRequestDto;
 import com.sparta.newsfeed.dto.boardDto.BoardResponseDto;
 import com.sparta.newsfeed.entity.Board;
 import com.sparta.newsfeed.entity.Like_entity.ContentsLike;
+import com.sparta.newsfeed.entity.Like_entity.LikeContents;
 import com.sparta.newsfeed.entity.Multimedia;
 import com.sparta.newsfeed.entity.User_entity.User;
 import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
@@ -24,6 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -72,20 +77,43 @@ public class BoardService {
 
     // 개시판 전채 조회
     @Transactional
-    public Page<BoardResponseDto> get_all_board(HttpServletRequest servletRequest,int page) {
-        // 생성 날자 순이라면 결국 id 순
-        Pageable pageable = PageRequest.of(page, 10, Sort.Direction.DESC, "id");
-        Page<Board> boards = boardRepository.findAll(pageable);
-        return boards.map(BoardResponseDto::new);
+    public List<BoardResponseDto> get_all_board(
+            HttpServletRequest servletRequest,
+            int page,
+            boolean is,
+            LocalDate startDate, LocalDate endDate){
+
+        Sort.Direction direction = is ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort =Sort.by(direction);
+        Pageable pageable = PageRequest.of(page, 10, sort);
+
+        Page<Board> boards;
+/*        if(startDate != null && endDate != null) {
+            LocalDateTime startDateTime = startDate.atStartOfDay();
+            LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
+            boards = boardRepository.findAllByCreatedTimeBetween(startDateTime, endDateTime, pageable);
+        }else{*/
+            boards = boardRepository.findAll(pageable);
+//        }
+        List<BoardResponseDto> boardResponseDtos = new ArrayList<>();
+        for (Board board : boards) {
+            long likeCount = getLikeCount(board.getId());
+            boardResponseDtos.add(new BoardResponseDto(board, likeCount));
+        }
+        return boardResponseDtos;
     }
 
     // 개시판 특정 조회
     public BoardResponseDto get_board(long boardId) {
         Board board = getBoard_long(boardId);
-        return new BoardResponseDto(board);
+        long likeCount = getLikeCount(boardId);
+        return new BoardResponseDto(board,likeCount);
     }
 
+
+
     // 개시판 특정 좋아요
+    @Transactional
     public BoardResponseDto get_board_like(HttpServletRequest servletRequest ,long boardId) {
         Board board = getBoard_long(boardId);
         User user = jwt.getTokenUser(servletRequest);
@@ -96,9 +124,10 @@ public class BoardService {
 
         ContentsLike contentsLike = new ContentsLike(user, board);
         contentsLikeRepository.save(contentsLike);
-
+        long likeCount = getLikeCount(boardId);
+        board.setLikecounts(likeCount);
         String like_m = "좋아요를 누르셨습니다.";
-        return new BoardResponseDto(board,like_m);
+        return new BoardResponseDto(board,likeCount,like_m);
     }
 
     // 개시판 특정 좋아요 삭제
@@ -113,9 +142,10 @@ public class BoardService {
 
         ContentsLike contentsLike = contentsLikeRepository.findByUserAndContents(user, board.getId());
         contentsLikeRepository.delete(contentsLike);
-
+        long likeCount = getLikeCount(boardId);
+        board.setLikecounts(likeCount);
         String like_m = "좋아요가 취소되었습니다.";
-        return new BoardResponseDto(board,like_m);
+        return new BoardResponseDto(board,likeCount,like_m);
     }
 
     // 개시판 삭제
@@ -164,7 +194,12 @@ public class BoardService {
         return "수정 완료";
     }
 
-    /* 도구 상자 */
+
+
+
+
+
+    //:::::::::::::::::::/* 도구 상자 */:::::::::::::::::::
 
 
     //개시판 유저 체크
@@ -196,5 +231,11 @@ public class BoardService {
                 .orElseThrow(() -> new IllegalArgumentException(boardId +"번의 개시판은 없습니다"));
 
         return board;
+    }
+
+    // 좋아요 숫자
+    private long getLikeCount(long boardId) {
+        long likeCount = contentsLikeRepository.countByLikeContentsAndContents(LikeContents.BOARD, boardId);
+        return likeCount;
     }
 }

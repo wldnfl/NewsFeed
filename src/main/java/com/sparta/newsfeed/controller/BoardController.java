@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -53,8 +55,13 @@ public class BoardController {
     @GetMapping("/board/{page}")
     @Operation(summary = "개시물 전체 조회")
     @Parameter(name = "page",description = "페이지 위치 값 1부터 시작")
-    public List<BoardResponseDto> get_all_board(HttpServletRequest servletRequest,@PathVariable int page) {
-        return boardService.get_all_board(servletRequest,page-1).getContent();
+    public List<BoardResponseDto> get_all_board(
+            HttpServletRequest servletRequest
+            ,@PathVariable int page
+            ,@RequestParam(defaultValue = "false") Boolean is
+            ,@RequestParam(required = false) LocalDate startday,
+            @RequestParam(required = false) LocalDate endday) {
+        return boardService.get_all_board(servletRequest,page-1,is,startday,endday);
     }
 
 
@@ -64,6 +71,7 @@ public class BoardController {
     public BoardResponseDto get_board(@PathVariable long boardId) {
         return boardService.get_board(boardId);
     }
+
 
     @GetMapping("/board/view/{boardId}/like")
     @Operation(summary = "개시물 좋아요")
