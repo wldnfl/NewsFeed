@@ -16,7 +16,7 @@ public class ContentsLike extends Timer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     //유저 아이디
-    private Long user_id;
+    private Long userid;
     //콘텐츠 ID
     private Long contents;
     //콘텐츠 유형
@@ -25,7 +25,7 @@ public class ContentsLike extends Timer {
 
     // 유저
     @ManyToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "userid", insertable = false, updatable = false)
     private User user;
 
 
@@ -33,13 +33,13 @@ public class ContentsLike extends Timer {
     }
 
     public ContentsLike(User user, Board board) {
-        this.user_id = user.getId();
+        this.userid = user.getId();
         this.likeContents = LikeContents.BOARD;
         this.contents = board.getId();
     }
 
     public ContentsLike(User user, Comment comment) {
-        this.user_id = user.getId();
+        this.userid = user.getId();
         this.likeContents = LikeContents.COMMENT;
         this.contents = comment.getId();
     }
