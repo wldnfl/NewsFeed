@@ -36,7 +36,16 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests((authorizeRequests) ->
                 authorizeRequests
-                        .requestMatchers("/api/user/sign", "/api/user/login", "/api/user/verify", "/api/user/reverify").permitAll() // 회원가입, 로그인 경로는 인증 없이 접근 허용
+                        .requestMatchers(
+                                "/",
+                                "/api/user/sign",
+                                "/api/user/login",
+                                "/api/user/verify",
+                                "/api/user/reverify",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html"
+                        ).permitAll() // 인증 없이 접속이 가능한 페이지들 설정.
                         .anyRequest().authenticated() // 그 외 요청은 모두 인증이 필요하게 설정
         );
 
