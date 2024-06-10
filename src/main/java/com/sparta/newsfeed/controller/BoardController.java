@@ -3,19 +3,16 @@ package com.sparta.newsfeed.controller;
 
 import com.sparta.newsfeed.dto.boardDto.BoardRequestDto;
 import com.sparta.newsfeed.dto.boardDto.BoardResponseDto;
-
 import com.sparta.newsfeed.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,10 +25,9 @@ public class BoardController {
 
     @PostMapping("/board/create")
     @Operation(summary = "개시물 생성")
-    @Parameter(name = "contents",description = "개시판 내용")
-    public String create_board(
-            HttpServletRequest servletRequest, @RequestBody BoardRequestDto boardRequestDto) {
-        return boardService.create_board(servletRequest,boardRequestDto);
+    @Parameter(name = "contents", description = "개시판 내용")
+    public String create_board(HttpServletRequest servletRequest, @RequestBody BoardRequestDto boardRequestDto) {
+        return boardService.create_board(servletRequest, boardRequestDto);
     }
 
     /*@PostMapping("/board/create/m") // Multimedia의 m
@@ -52,22 +48,28 @@ public class BoardController {
         return boardService.create_m_board(servletRequest, image, movie, board);
     }*/
 
-    @GetMapping("/board/{page}")
+    @GetMapping("/board/{page}/{view}")
     @Operation(summary = "개시물 전체 조회")
-    @Parameter(name = "page",description = "페이지 위치 값 1부터 시작")
+    @Parameters({
+            @Parameter(name = "page", description = "페이지 위치 값 1부터 시작"),
+            @Parameter(name = "view",
+                    description = "1,2 좋아요 정렬 3,4, 선택한 날자별 정렬"),
+            @Parameter(name = "start", description = "2024-06-01T00:00:00"),
+            @Parameter(name = "end", description = "2024-06-01T00:00:00")
+    })
     public List<BoardResponseDto> get_all_board(
-            HttpServletRequest servletRequest
-            ,@PathVariable int page
-            ,@RequestParam(defaultValue = "false") Boolean is
-            ,@RequestParam(required = false) LocalDate startday,
-            @RequestParam(required = false) LocalDate endday) {
-        return boardService.get_all_board(servletRequest,page-1,is,startday,endday);
+            HttpServletRequest servletRequest,
+            @PathVariable int page,
+            @PathVariable int view,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
+        return boardService.get_all_board(servletRequest, page - 1, view, start, end).getContent();
     }
 
 
     @GetMapping("/board/view/{boardId}")
     @Operation(summary = "개시물 특정 조회")
-    @Parameter(name = "id",description = "조회할 id값")
+    @Parameter(name = "id", description = "조회할 id값")
     public BoardResponseDto get_board(@PathVariable long boardId) {
         return boardService.get_board(boardId);
     }
@@ -75,34 +77,31 @@ public class BoardController {
 
     @GetMapping("/board/view/{boardId}/like")
     @Operation(summary = "개시물 좋아요")
-    @Parameter(name = "id",description = "조회할 id값")
-    public BoardResponseDto get_board_like(HttpServletRequest servletRequest,@PathVariable long boardId) {
-        return boardService.get_board_like(servletRequest,boardId);
+    @Parameter(name = "id", description = "조회할 id값")
+    public BoardResponseDto get_board_like(HttpServletRequest servletRequest, @PathVariable long boardId) {
+        return boardService.get_board_like(servletRequest, boardId);
     }
 
 
     @GetMapping("/board/view/{boardId}/nolike")
     @Operation(summary = "개시물 좋아요 지우기")
-    @Parameter(name = "id",description = "조회할 id값")
-    public BoardResponseDto get_board_nolike(HttpServletRequest servletRequest,@PathVariable long boardId) {
-        return boardService.get_board_nolike(servletRequest,boardId);
+    @Parameter(name = "id", description = "조회할 id값")
+    public BoardResponseDto get_board_nolike(HttpServletRequest servletRequest, @PathVariable long boardId) {
+        return boardService.get_board_nolike(servletRequest, boardId);
     }
-  
+
     @DeleteMapping("/board/delete")
-    @Parameter(name = "id",description = "삭제할 id값")
+    @Parameter(name = "id", description = "삭제할 id값")
     @Operation(summary = "개시물 삭제")
-    public String delete_board(HttpServletRequest servletRequest ,@RequestBody BoardRequestDto boardRequestDto) {
-        return boardService.delete_board(servletRequest,boardRequestDto);
+    public String delete_board(HttpServletRequest servletRequest, @RequestBody BoardRequestDto boardRequestDto) {
+        return boardService.delete_board(servletRequest, boardRequestDto);
     }
 
     @PatchMapping("/board/update")
     @Operation(summary = "개시물 수정")
-    @Parameters({
-            @Parameter(name = "id",description = "수정할 id값"),
-            @Parameter(name = "contents",description = "개시판 내용")
-    })
-    public String update_board(HttpServletRequest servletRequest ,@RequestBody BoardRequestDto boardRequestDto) {
-        return boardService.update_board(servletRequest , boardRequestDto);
+    @Parameters({@Parameter(name = "id", description = "수정할 id값"), @Parameter(name = "contents", description = "개시판 내용")})
+    public String update_board(HttpServletRequest servletRequest, @RequestBody BoardRequestDto boardRequestDto) {
+        return boardService.update_board(servletRequest, boardRequestDto);
     }
 
 
