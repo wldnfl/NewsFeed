@@ -25,7 +25,7 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("/board/create")
-    @Operation(summary = "개시물 생성")
+    @Operation(summary = "개시물 생성", tags = {"게시물"})
     @Parameter(name = "contents",description = "개시판 내용")
     public String create_board(
             HttpServletRequest servletRequest, @RequestBody BoardRequestDto boardRequestDto) {
@@ -34,7 +34,7 @@ public class BoardController {
 
     /*@PostMapping("/board/create/m") // Multimedia의 m
 
-    @Operation(summary = "게시물 + 미디어 생성")
+    @Operation(summary = "게시물 + 미디어 생성", tags = {"게시물"})
     @Parameters({
             @Parameter(name = "image",description = "이미지 삽입시"),
             @Parameter(name = "movie",description = "동영상 삽입시"),
@@ -51,7 +51,7 @@ public class BoardController {
     }*/
 
     @GetMapping("/board/{page}")
-    @Operation(summary = "개시물 전체 조회")
+    @Operation(summary = "개시물 전체 조회", tags = {"게시물"})
     @Parameter(name = "page",description = "페이지 위치 값 1부터 시작")
     public List<BoardResponseDto> get_all_board(HttpServletRequest servletRequest,@PathVariable int page) {
         return boardService.get_all_board(servletRequest,page-1).getContent();
@@ -59,14 +59,14 @@ public class BoardController {
 
 
     @GetMapping("/board/view/{boardId}")
-    @Operation(summary = "개시물 특정 조회")
+    @Operation(summary = "개시물 특정 조회", tags = {"게시물"})
     @Parameter(name = "id",description = "조회할 id값")
     public BoardResponseDto get_board(@PathVariable long boardId) {
         return boardService.get_board(boardId);
     }
 
     @GetMapping("/board/view/{boardId}/like")
-    @Operation(summary = "개시물 좋아요")
+    @Operation(summary = "개시물 좋아요", tags = {"게시물"})
     @Parameter(name = "id",description = "조회할 id값")
     public BoardResponseDto get_board_like(HttpServletRequest servletRequest,@PathVariable long boardId) {
         return boardService.get_board_like(servletRequest,boardId);
@@ -74,7 +74,7 @@ public class BoardController {
 
 
     @GetMapping("/board/view/{boardId}/nolike")
-    @Operation(summary = "개시물 좋아요 지우기")
+    @Operation(summary = "개시물 좋아요 지우기", tags = {"게시물"})
     @Parameter(name = "id",description = "조회할 id값")
     public BoardResponseDto get_board_nolike(HttpServletRequest servletRequest,@PathVariable long boardId) {
         return boardService.get_board_nolike(servletRequest,boardId);
@@ -82,13 +82,13 @@ public class BoardController {
   
     @DeleteMapping("/board/delete")
     @Parameter(name = "id",description = "삭제할 id값")
-    @Operation(summary = "개시물 삭제")
+    @Operation(summary = "개시물 삭제", tags = {"게시물"})
     public String delete_board(HttpServletRequest servletRequest ,@RequestBody BoardRequestDto boardRequestDto) {
         return boardService.delete_board(servletRequest,boardRequestDto);
     }
 
     @PatchMapping("/board/update")
-    @Operation(summary = "개시물 수정")
+    @Operation(summary = "개시물 수정", tags = {"게시물"})
     @Parameters({
             @Parameter(name = "id",description = "수정할 id값"),
             @Parameter(name = "contents",description = "개시판 내용")
@@ -100,7 +100,7 @@ public class BoardController {
 
     /*@PatchMapping("/board/update/m") // Multimedia의 m
     
-    @Operation(summary = "게시물 + 미디어 수정")
+    @Operation(summary = "게시물 + 미디어 수정", tags = {"게시물"})
     @Parameters({
             @Parameter(name = "image",description = "이미지 수정시"),
             @Parameter(name = "movie",description = "동영상 수정시"),
