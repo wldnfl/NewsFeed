@@ -1,31 +1,43 @@
 package com.sparta.newsfeed.service;
 
-import com.sparta.newsfeed.dto.CommentRequestDto;
-import com.sparta.newsfeed.dto.CommentResponseDto;
+
+import com.sparta.newsfeed.dto.CommentDto.CommentRequestDto;
+import com.sparta.newsfeed.dto.CommentDto.CommentResponseDto;
 import com.sparta.newsfeed.entity.Board;
 import com.sparta.newsfeed.entity.Comment;
+import com.sparta.newsfeed.entity.Like_entity.ContentsLike;
+import com.sparta.newsfeed.entity.User_entity.User;
+import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import com.sparta.newsfeed.repository.BoardRepository;
 import com.sparta.newsfeed.repository.CommentRepository;
-import lombok.AllArgsConstructor;
+import com.sparta.newsfeed.repository.ContentsLikeRepository;
+import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
 public class CommentService {
 
+
+
+    private final ContentsLikeRepository contentsLikeRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final JwtTokenProvider jwt;
 
     //댓글 생성
     @Transactional
-    public String create_comment(Long boardId, CommentRequestDto CommentRequestDto){
+    public String create_comment(HttpServletRequest servletRequest, Long boardId, CommentRequestDto CommentRequestDto){
         Board board = getBoard(boardId);
-
-        Comment comment = new Comment(CommentRequestDto,board);
+        User user = jwt.getTokenUser(servletRequest);
+        Comment comment = new Comment(CommentRequestDto,board,user);
         board.getCommentList().add(comment);
         comment.setBoard_user_id(board.getUser_id());
         comment.setBoard(board);
@@ -35,30 +47,87 @@ public class CommentService {
     }
 
 
+
+    //보드의 댓글 전부 조회
+    @Transactional
+    public List<CommentResponseDto> board_comment( Long boardId) {
+        getBoard(boardId);
+        return commentRepository.findAll().stream().filter(C -> C.getBoard().getId().equals(boardId))
+                .map(CommentResponseDto ::new).toList();
+    }
+
+    // 특정 댓글 가져오기
+    public CommentResponseDto board_comment_view(Long boardId, Long commentid) {
+        return new CommentResponseDto(getComment(commentid));}
+
+    // 댓글 좋아요
+    public CommentResponseDto board_comment_like(HttpServletRequest servletRequest, Long boardId, Long commentid) {
+        Comment comment = getComment(commentid);
+        User user = jwt.getTokenUser(servletRequest);
+
+        if (contentsLikeRepository.existsByUserAndContents(user, comment.getId())) {
+            throw new IllegalArgumentException("이미 좋아요를 눌렀습니다");
+        }
+
+        ContentsLike contentsLike = new ContentsLike(user, comment);
+        contentsLikeRepository.save(contentsLike);
+
+        String like_m = "좋아요를 누르셨습니다.";
+        return new CommentResponseDto(comment,like_m);
+    }
+
+    // 댓글 좋아요 취소
+    @Transactional
+    public CommentResponseDto board_comment_nolike(HttpServletRequest servletRequest, Long boardId, Long commentid) {
+        Comment comment = getComment(commentid);
+        User user = jwt.getTokenUser(servletRequest);
+
+        if (contentsLikeRepository.existsByUserAndContents(user, comment.getId())) {
+            throw new IllegalArgumentException("이미 좋아요를 눌렀습니다");
+        }
+
+
+        ContentsLike contentsLike = contentsLikeRepository.findByUserAndContents(user, comment.getId());
+        contentsLikeRepository.delete(contentsLike);
+        String like_m = "좋아요가 취소되었습니다.";
+        return new CommentResponseDto(comment,like_m);
+    }
+
+
     //댓글 수정
     @Transactional
-    public String update_comment(Long boardId,Long commentId, CommentRequestDto commentRequestDto) {
-        Board board = getBoard(boardId);
-        Comment comment = getComment(commentId);
-        String contents = comment.getContents();
+    public String update_comment(HttpServletRequest servletRequest,Long boardId,Long commentId, CommentRequestDto commentRequestDto) {
+        getBoard(boardId);
+        Comment comment = getComment(servletRequest, commentId);
+        String content = comment.getContents();
         comment.update(commentRequestDto);
-        return "변경 전 :"+contents +"\n변경 후 :"+commentRequestDto.getContents();
+        return "변경 전 :"+content +"\n변경 후 :"+commentRequestDto.getContents();
     }
 
 
     //댓글 삭제
-    public String delete (Long id){
-            Comment comment = getComment(id);
-            commentRepository.delete(comment);
+    public String delete (HttpServletRequest servletRequest, Long commentId){
+        Comment comment = getComment(servletRequest, commentId);
+        commentRepository.delete(comment);
             return "댓글 삭제 완료";
     }
 
+    // 댓글 유저 확인
+    private Comment getComment(HttpServletRequest servletRequest, Long commentId) {
+        User user = jwt.getTokenUser(servletRequest);
+        Comment comment = getComment(commentId);
+        if(!user.getId().equals(comment.getUser_id())){
+            throw new IllegalArgumentException("소유한 댓글이 아닙니다.");
+        }
+        return comment;
+    }
 
     // id로 Board 가져오기
     private Board getBoard(Long id) {
-        return  boardRepository
-                .findById(id).orElseThrow(
+        Board board = boardRepository.findById(id).orElseThrow(
                         ()->new IllegalArgumentException("해당 개시판이 없습니다."));
+        if (board.getCommentList().isEmpty())throw new IllegalArgumentException( "댓글이 없습니다.");
+        return  board;
 
     }
 
@@ -68,6 +137,4 @@ public class CommentService {
                 .findById(commentId).orElseThrow(
                         ()-> new IllegalArgumentException("해당 개시판이 없습니다."));
     }
-
-
 }

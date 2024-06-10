@@ -1,12 +1,14 @@
 package com.sparta.newsfeed.controller;
 
-import com.sparta.newsfeed.dto.CommentRequestDto;
+import com.sparta.newsfeed.dto.CommentDto.CommentRequestDto;
+import com.sparta.newsfeed.dto.CommentDto.CommentResponseDto;
 import com.sparta.newsfeed.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/board")
@@ -17,37 +19,62 @@ public class CommentController {
 
     @PostMapping("/{boardId}/comment")
     @Operation(summary = "댓글 생성")
-    @Parameters({
-            @Parameter(name = "boardId",description = "개시판 번호"),
-            @Parameter(name = "content",description = "댓글 내용")
-    })
     public String create_comment(
+            HttpServletRequest servletRequest,
             @PathVariable Long boardId,
             @RequestBody CommentRequestDto commentRequestDto){
-        return commentService.create_comment(boardId,commentRequestDto);
+        return commentService.create_comment(servletRequest,boardId,commentRequestDto);
+    }
+
+    @GetMapping("/{boardId}/comment")
+    @Operation(summary = "개시판의 댓글 조회")
+    public List<CommentResponseDto> board_comment(
+            @PathVariable Long boardId){
+        return commentService.board_comment(boardId);
+    }
+
+    @GetMapping("/{boardId}/comment{commentid}")
+    @Operation(summary = "개시판의 댓글 조회")
+    public CommentResponseDto board_comment_view(
+            @PathVariable Long boardId,
+            @PathVariable Long commentid){
+        return commentService.board_comment_view(boardId,commentid);
+    }
+
+    @GetMapping("/{boardId}/comment/{commentid}/like")
+    @Operation(summary = "개시판의 특정 댓글 좋아요")
+    public CommentResponseDto board_comment_like(
+            HttpServletRequest servletRequest,
+            @PathVariable Long boardId,
+            @PathVariable Long commentid){
+        return commentService.board_comment_like(servletRequest,boardId,commentid);
+    }
+
+    @GetMapping("/{boardId}/comment/{commentid}/nolike")
+    @Operation(summary = "개시판의 특정 댓글 좋아요 취소")
+    public CommentResponseDto board_comment_nolike(
+            HttpServletRequest servletRequest,
+            @PathVariable Long boardId,
+            @PathVariable Long commentid){
+        return commentService.board_comment_nolike(servletRequest,boardId,commentid);
     }
 
     @PatchMapping("/{boardId}/comment/{commentId}")
     @Operation(summary = "댓글 수정")
-    @Parameters({
-            @Parameter(name = "boardId",description = "개시판 번호"),
-            @Parameter(name = "commentId",description = "댓글 번호"),
-            @Parameter(name = "content",description = "댓글 내용")
-    })
+  
     public String update_comment(
+            HttpServletRequest servletRequest,
             @PathVariable Long commentId,
             @PathVariable Long boardId,
             @RequestBody CommentRequestDto commentRequestDto){
-        return commentService.update_comment(boardId,commentId, commentRequestDto);
+        return commentService.update_comment(servletRequest,boardId,commentId, commentRequestDto);
     }
 
     @DeleteMapping("/{boardId}/comment/{commentId}")
-    @Operation(summary = "댓글 삭제")
-    @Parameters({
-            @Parameter(name = "boardId",description = "개시판 번호"),
-            @Parameter(name = "commentId",description = "댓글 번호")
-    })
-    public String delete_comment(@PathVariable long commentId, @PathVariable long boardId) {
-        return commentService.delete(commentId);
+    @Operation(summary = "댓글 삭재")
+    public String delete_comment(
+            HttpServletRequest servletRequest,@PathVariable long commentId, @PathVariable long boardId) {
+        return commentService.delete(servletRequest,commentId);
+
     }
 }

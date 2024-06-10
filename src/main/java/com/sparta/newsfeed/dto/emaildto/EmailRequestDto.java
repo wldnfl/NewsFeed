@@ -1,0 +1,16 @@
+package com.sparta.newsfeed.dto.emaildto;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+
+@Getter
+public class EmailRequestDto {
+
+    @Email
+    @NotBlank(message = "email은 비워둘 수 없습니다")
+    private String email;
+
+    @NotBlank(message = "code 비워둘 수 없습니다")
+    private String code;
+}

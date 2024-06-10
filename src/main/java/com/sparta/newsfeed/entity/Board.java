@@ -1,12 +1,12 @@
 package com.sparta.newsfeed.entity;
 
 
-import com.sparta.newsfeed.dto.BoardRequestDto;
+import com.sparta.newsfeed.dto.boardDto.BoardRequestDto;
+import com.sparta.newsfeed.entity.User_entity.User;
 import jakarta.persistence.*;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Getter
@@ -23,6 +23,11 @@ public class Board extends Timer{
     //내용
     private String contents;
 
+    // 유저
+    @ManyToOne
+    @JoinColumn(name = "user_id" ,insertable = false, updatable = false)
+    private User user;
+
     //댓글
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "board_id")
@@ -35,8 +40,9 @@ public class Board extends Timer{
     public Board() {
     }
 
-    public Board(HttpServletRequest servletRequest, BoardRequestDto boardRequestDto) {
-        this.user_id = boardRequestDto.getUser_id();
+    public Board(User user, BoardRequestDto boardRequestDto) {
+        this.user_id = user.getId();
+
         this.contents = boardRequestDto.getContents();
     }
 
