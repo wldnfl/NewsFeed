@@ -24,6 +24,7 @@ public class NewsFeedExceptionHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponseDto> handleRuntimeException(RuntimeException e) {
         ErrorResponseDto errorResponse = new ErrorResponseDto(500, e.getMessage());

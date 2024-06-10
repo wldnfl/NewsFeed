@@ -2,6 +2,7 @@ package com.sparta.newsfeed.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.sparta.newsfeed.dto.boardDto.BoardRequestDto;
 import com.sparta.newsfeed.dto.boardDto.BoardResponseDto;
 import com.sparta.newsfeed.entity.Board;
@@ -119,6 +120,7 @@ public class BoardService {
 
     // 개시판 삭제
     @Transactional
+
     public String delete_board(HttpServletRequest servletRequest, BoardRequestDto boardRequestDto) {
         Board board = getStringBoard(servletRequest, boardRequestDto);
         boardRepository.delete(board);
@@ -181,6 +183,7 @@ public class BoardService {
     }
 
     // 개시판 id로 찾아서 가셔오기
+
     private Board getIdBoard(BoardRequestDto boardRequestDto) {
         Optional<Board> boards = boardRepository.findById(boardRequestDto.getId());
         if (boards.isEmpty()) throw new NullPointerException("사용자의 개시물이 없습니다.");
@@ -191,6 +194,7 @@ public class BoardService {
     private Board getBoard_long(long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException(boardId +"번의 개시판은 없습니다"));
+
         return board;
     }
 }

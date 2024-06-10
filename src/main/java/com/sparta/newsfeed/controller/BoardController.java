@@ -1,13 +1,16 @@
 package com.sparta.newsfeed.controller;
 
+
 import com.sparta.newsfeed.dto.boardDto.BoardRequestDto;
 import com.sparta.newsfeed.dto.boardDto.BoardResponseDto;
+
 import com.sparta.newsfeed.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +33,7 @@ public class BoardController {
     }
 
     /*@PostMapping("/board/create/m") // Multimedia의 m
+
     @Operation(summary = "게시물 + 미디어 생성")
     @Parameters({
             @Parameter(name = "image",description = "이미지 삽입시"),
@@ -75,8 +79,7 @@ public class BoardController {
     public BoardResponseDto get_board_nolike(HttpServletRequest servletRequest,@PathVariable long boardId) {
         return boardService.get_board_nolike(servletRequest,boardId);
     }
-
-
+  
     @DeleteMapping("/board/delete")
     @Parameter(name = "id",description = "삭제할 id값")
     @Operation(summary = "개시물 삭제")
@@ -94,7 +97,9 @@ public class BoardController {
         return boardService.update_board(servletRequest , boardRequestDto);
     }
 
+
     /*@PatchMapping("/board/update/m") // Multimedia의 m
+    
     @Operation(summary = "게시물 + 미디어 수정")
     @Parameters({
             @Parameter(name = "image",description = "이미지 수정시"),
@@ -109,5 +114,6 @@ public class BoardController {
             @RequestPart(required = false) MultipartFile movie,
             @RequestPart String board) {
         return boardService.update_m_board(servletRequest, image, movie, board);
+
     }*/
 }
