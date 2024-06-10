@@ -52,7 +52,7 @@ public class CommentController {
 
     @GetMapping("/{boardId}/comment/{commentid}/nolike")
     @Operation(summary = "개시판의 특정 댓글 좋아요 취소", tags = {"댓글"})
-    public CommentResponseDto board_comment_nolike(
+    public CommentResponseDto boardCommentNolike(
             HttpServletRequest servletRequest,
             @PathVariable Long boardId,
             @PathVariable Long commentid) {
@@ -62,7 +62,7 @@ public class CommentController {
     @PatchMapping("/{boardId}/comment/{commentId}")
     @Operation(summary = "댓글 수정", tags = {"댓글"})
 
-    public String update_comment(
+    public String updateComment(
             HttpServletRequest servletRequest,
             @PathVariable Long commentId,
             @PathVariable Long boardId,
@@ -72,7 +72,7 @@ public class CommentController {
 
     @DeleteMapping("/{boardId}/comment/{commentId}")
     @Operation(summary = "댓글 삭재", tags = {"댓글"})
-    public String deletecomment(
+    public String deleteComment(
             HttpServletRequest servletRequest, @PathVariable long commentId, @PathVariable long boardId) {
         return commentService.delete(servletRequest, commentId);
 
