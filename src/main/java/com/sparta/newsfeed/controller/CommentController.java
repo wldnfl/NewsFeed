@@ -61,6 +61,7 @@ public class CommentController {
 
     @PatchMapping("/{boardId}/comment/{commentId}")
     @Operation(summary = "댓글 수정")
+  
     public String update_comment(
             HttpServletRequest servletRequest,
             @PathVariable Long commentId,
@@ -74,5 +75,6 @@ public class CommentController {
     public String delete_comment(
             HttpServletRequest servletRequest,@PathVariable long commentId, @PathVariable long boardId) {
         return commentService.delete(servletRequest,commentId);
+
     }
 }

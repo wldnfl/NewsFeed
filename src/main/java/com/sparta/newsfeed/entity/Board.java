@@ -6,6 +6,7 @@ import com.sparta.newsfeed.entity.User_entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+
 import java.util.List;
 
 @Getter
@@ -41,6 +42,7 @@ public class Board extends Timer{
 
     public Board(User user, BoardRequestDto boardRequestDto) {
         this.user_id = user.getId();
+
         this.contents = boardRequestDto.getContents();
     }
 

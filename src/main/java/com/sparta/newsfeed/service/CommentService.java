@@ -1,5 +1,6 @@
 package com.sparta.newsfeed.service;
 
+
 import com.sparta.newsfeed.dto.CommentDto.CommentRequestDto;
 import com.sparta.newsfeed.dto.CommentDto.CommentResponseDto;
 import com.sparta.newsfeed.entity.Board;
@@ -11,15 +12,19 @@ import com.sparta.newsfeed.repository.BoardRepository;
 import com.sparta.newsfeed.repository.CommentRepository;
 import com.sparta.newsfeed.repository.ContentsLikeRepository;
 import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
 public class CommentService {
+
 
 
     private final ContentsLikeRepository contentsLikeRepository;
@@ -40,6 +45,7 @@ public class CommentService {
 
         return "개시판 ::"+board.getContents() +"의\n "+comment.getContents() + "라는 댓글이 입력되었습니다.";
     }
+
 
 
     //보드의 댓글 전부 조회
@@ -122,6 +128,7 @@ public class CommentService {
                         ()->new IllegalArgumentException("해당 개시판이 없습니다."));
         if (board.getCommentList().isEmpty())throw new IllegalArgumentException( "댓글이 없습니다.");
         return  board;
+
     }
 
     // id로 Comment 가져오기
@@ -130,7 +137,4 @@ public class CommentService {
                 .findById(commentId).orElseThrow(
                         ()-> new IllegalArgumentException("해당 개시판이 없습니다."));
     }
-
-
-
 }
