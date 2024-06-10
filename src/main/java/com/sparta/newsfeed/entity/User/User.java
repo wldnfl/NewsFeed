@@ -62,11 +62,10 @@ public class User extends Timer {
     private List<ContentsLike> contentsLikeList;
 
 
-
     public User() {
     }
 
-    public User(SignUpRequestDto userSignRequestDto){
+    public User(SignUpRequestDto userSignRequestDto) {
         this.userId = userSignRequestDto.getUserId();
         this.password = userSignRequestDto.getPassword();
         this.username = userSignRequestDto.getUsername();
@@ -75,7 +74,7 @@ public class User extends Timer {
         this.userStatus = userSignRequestDto.getUserStatus();
     }
 
-    public void update(UserRequestDto userSignRequestDto){
+    public void update(UserRequestDto userSignRequestDto) {
         this.username = userSignRequestDto.getUsername();
         this.email = userSignRequestDto.getEmail();
         this.one_liner = userSignRequestDto.getOne_liner();

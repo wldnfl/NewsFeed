@@ -28,7 +28,7 @@ public class SignUpRequestDto {
     //이름
     @NotBlank(message = " username 비워둘 수 없습니다.")
     @Pattern(regexp = "^[\\s\\S]*$", message = "username 공백을 포함할 수 없습니다.")
-    private String username = "username";
+    private final String username = "username";
 
     //이매일
     @Email
@@ -37,8 +37,8 @@ public class SignUpRequestDto {
 
     //한줄 소개
     @NotBlank(message = " one_liner 비워둘 수 없습니다.")
-    private String one_liner = "one_liner ";
+    private final String one_liner = "one_liner ";
 
     //유저 상태 코드
-    private UserStatus userStatus = UserStatus.ACTIVE;
+    private final UserStatus userStatus = UserStatus.ACTIVE;
 }

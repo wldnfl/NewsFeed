@@ -1,17 +1,17 @@
 package com.sparta.newsfeed.controller;
 
 
+import com.sparta.newsfeed.dto.EmailDto.EmailRequestDto;
+import com.sparta.newsfeed.dto.EmailDto.ReVerifyEMailRequestDto;
 import com.sparta.newsfeed.dto.UserDto.LoginUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserResponseDto;
-import com.sparta.newsfeed.dto.emaildto.EmailRequestDto;
-import com.sparta.newsfeed.dto.emaildto.ReVerifyEMailRequestDto;
+
 import com.sparta.newsfeed.service.SignUpService;
 import com.sparta.newsfeed.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -29,9 +29,9 @@ public class UserController {
 
     // 회원가입
     @PostMapping("/user/sign")
-    @Operation(summary = "회원 가입" , tags = {"사용자"})
+    @Operation(summary = "회원 가입", tags = {"사용자"})
     public String addUser(@Valid @RequestBody SignUpRequestDto requestDto) {
-        return  signUpService.addUser(requestDto);
+        return signUpService.addUser(requestDto);
     }
 
     // 이메일 인증
@@ -59,8 +59,8 @@ public class UserController {
     // 로그아웃
     @PostMapping("/user/logout")
     @Operation(summary = "로그아웃", tags = {"사용자"})
-    public String logoutUser(/*@RequestHeader("AccessToken") String accessToken,*/ HttpServletRequest request,HttpServletResponse response) {
-        return signUpService.logoutUser(request,response);
+    public String logoutUser(/*@RequestHeader("AccessToken") String accessToken,*/ HttpServletRequest request, HttpServletResponse response) {
+        return signUpService.logoutUser(request, response);
     }
 
     // 회원 탈퇴
@@ -71,7 +71,7 @@ public class UserController {
             LoginUpRequestDto loginUpRequestDto,
             HttpServletRequest request,
             HttpServletResponse response) {
-        return signUpService.deleteUser(loginUpRequestDto,request,response);
+        return signUpService.deleteUser(loginUpRequestDto, request, response);
     }
 
     // 유저 프로필 가져오기
@@ -84,16 +84,16 @@ public class UserController {
     // 유저 프로필 수정
     @PatchMapping("/user/profile")
     @Operation(summary = "유저 프로필 수정", tags = {"사용자"})
-    public String updateUserProfile(HttpServletRequest request, @RequestBody UserRequestDto userRequestDto){
-        return userService.updateUserProfile(request,userRequestDto);
+    public String updateUserProfile(HttpServletRequest request, @RequestBody UserRequestDto userRequestDto) {
+        return userService.updateUserProfile(request, userRequestDto);
     }
 
     // 유저 프로필 사진
     @PatchMapping("/user/profile/m")
     @Operation(summary = "유저 프로필 사진 넣기", tags = {"사용자"})
-    @Parameter(name = "Pictur",description = "사용자 사진")
-    public String PictureUserProfile(HttpServletRequest servletRequest, @RequestPart MultipartFile Pictur){
-        return userService.PictureUserProfile(servletRequest,Pictur);
+    @Parameter(name = "Pictur", description = "사용자 사진")
+    public String PictureUserProfile(HttpServletRequest servletRequest, @RequestPart MultipartFile Pictur) {
+        return userService.PictureUserProfile(servletRequest, Pictur);
     }
 
 }

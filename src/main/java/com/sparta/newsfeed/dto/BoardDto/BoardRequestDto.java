@@ -1,4 +1,4 @@
-package com.sparta.newsfeed.dto.boardDto;
+package com.sparta.newsfeed.dto.BoardDto;
 
 import lombok.Getter;
 

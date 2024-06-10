@@ -1,9 +1,9 @@
 package com.sparta.newsfeed.service;
 
+import com.sparta.newsfeed.dto.EmailDto.EmailRequestDto;
+import com.sparta.newsfeed.dto.EmailDto.ReVerifyEMailRequestDto;
 import com.sparta.newsfeed.dto.UserDto.LoginUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
-import com.sparta.newsfeed.dto.emaildto.EmailRequestDto;
-import com.sparta.newsfeed.dto.emaildto.ReVerifyEMailRequestDto;
 import com.sparta.newsfeed.entity.EmailVerification;
 import com.sparta.newsfeed.entity.User.User;
 import com.sparta.newsfeed.entity.User.UserStatus;
@@ -127,7 +127,7 @@ public class SignUpService {
 
         // 이메일 제한시간 추가.
         if (user.getSend_email_time().plusSeconds(180).isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException(user.getEmail() +"로 발송한 이메일의 제한 시간이 만료되었습니다.");
+            throw new IllegalArgumentException(user.getEmail() + "로 발송한 이메일의 제한 시간이 만료되었습니다.");
         }
 
         emailVerification.setVerified(true);
@@ -138,12 +138,12 @@ public class SignUpService {
         // 변경된 상태코드를 유저 객체에 저장
         userRepository.save(user);
 
-        return "이메일 : "+requestDto.getEmail()+" 님의 인증이 완료되었습니다.";
+        return "이메일 : " + requestDto.getEmail() + " 님의 인증이 완료되었습니다.";
     }
 
 
     // 유저 로그인
-    public String loginUser(LoginUpRequestDto requestDto , HttpServletResponse response) {
+    public String loginUser(LoginUpRequestDto requestDto, HttpServletResponse response) {
         User user = userRepository.findByUserId(requestDto.getUserId());
 
         userlogin(requestDto, user);
@@ -160,11 +160,11 @@ public class SignUpService {
         String accessToken = jwtTokenProvider.generateToken(user.getUserId());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
         //토큰 자동 저장
-        jwtTokenProvider.addToken(accessToken,  response);
+        jwtTokenProvider.addToken(accessToken, response);
         user.setRefresh_token(refreshToken);
         userRepository.save(user);
 
-        return "어서오세요 "+user.getUsername() + "님 로그인이 완료되었습니다";
+        return "어서오세요 " + user.getUsername() + "님 로그인이 완료되었습니다";
     }
 
     private void userlogin(LoginUpRequestDto requestDto, User user) {
@@ -174,7 +174,7 @@ public class SignUpService {
             throw new IllegalArgumentException("유저 아이디가 존재하지 않습니다.");
         }
 
-        if(!user.getUserId().equals(requestDto.getUserId())) {
+        if (!user.getUserId().equals(requestDto.getUserId())) {
             System.out.println("아이디 불일치 에러");
             throw new IllegalArgumentException("유저 아이디가 일치하지 않습니다");
         }
@@ -203,9 +203,9 @@ public class SignUpService {
 
     // 회원 탈퇴 메서드
     @Transactional
-    public String deleteUser( LoginUpRequestDto loginUpRequestDto,
-                              HttpServletRequest request,
-                              HttpServletResponse response) {
+    public String deleteUser(LoginUpRequestDto loginUpRequestDto,
+                             HttpServletRequest request,
+                             HttpServletResponse response) {
         User user = jwtTokenProvider.getTokenUser(request);
         System.out.println("회원 탈퇴 요청을 받았습니다: " + user.getUsername());
 

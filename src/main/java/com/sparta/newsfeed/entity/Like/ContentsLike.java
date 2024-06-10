@@ -25,13 +25,12 @@ public class ContentsLike extends Timer {
 
     // 유저
     @ManyToOne
-    @JoinColumn(name = "user_id" ,insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 
 
-
-
-    public ContentsLike() {}
+    public ContentsLike() {
+    }
 
     public ContentsLike(User user, Board board) {
         this.user_id = user.getId();

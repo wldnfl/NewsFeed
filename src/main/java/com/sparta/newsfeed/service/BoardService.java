@@ -2,9 +2,8 @@ package com.sparta.newsfeed.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.sparta.newsfeed.dto.boardDto.BoardRequestDto;
-import com.sparta.newsfeed.dto.boardDto.BoardResponseDto;
+import com.sparta.newsfeed.dto.BoardDto.BoardRequestDto;
+import com.sparta.newsfeed.dto.BoardDto.BoardResponseDto;
 import com.sparta.newsfeed.entity.Board;
 import com.sparta.newsfeed.entity.Like.ContentsLike;
 import com.sparta.newsfeed.entity.Like.LikeContents;
@@ -47,7 +46,7 @@ public class BoardService {
     // 개시판 생성
     // HttpServletRequest 는 유저 정보 받아오는거
     @Transactional
-    public String create_board(HttpServletRequest servletRequest, BoardRequestDto boardRequestDto) {
+    public String createBoard(HttpServletRequest servletRequest, BoardRequestDto boardRequestDto) {
 
         User user = jwt.getTokenUser(servletRequest);
         Board board = new Board(user, boardRequestDto);
@@ -57,7 +56,7 @@ public class BoardService {
     }
 
     // 개시판 만들때 파일도 같이 넣음
-    public String create_m_board(HttpServletRequest servletRequest, MultipartFile image, MultipartFile movie, String board) {
+    public String createMBoard(HttpServletRequest servletRequest, MultipartFile image, MultipartFile movie, String board) {
         try {
             User user = jwt.getTokenUser(servletRequest);
             Board new_board = new Board(user, getStringBoard(board));
@@ -67,13 +66,13 @@ public class BoardService {
             multimedia.setBoard(new_board);
 
             if (image != null && !image.isEmpty() && image.getContentType() != null && image.getContentType().toLowerCase().contains("image")) {
-                String imageKey = "images/" + UUID.randomUUID().toString();
+                String imageKey = "images/" + UUID.randomUUID();
                 uploadFileToS3(imageKey, image.getBytes(), image.getContentType());
                 multimedia.setImageUrl(getS3Url(imageKey));
             }
 
             if (movie != null && !movie.isEmpty() && movie.getContentType() != null && (movie.getContentType().toLowerCase().contains("mp4") || movie.getContentType().toLowerCase().contains("avi"))) {
-                String movieKey = "movies/" + UUID.randomUUID().toString();
+                String movieKey = "movies/" + UUID.randomUUID();
                 uploadFileToS3(movieKey, movie.getBytes(), movie.getContentType());
                 multimedia.setMovieUrl(getS3Url(movieKey));
             }
@@ -111,21 +110,23 @@ public class BoardService {
 
     // 개시판 전채 조회
     @Transactional
-    public Page<BoardResponseDto> get_all_board(HttpServletRequest servletRequest, int page, int view, LocalDateTime start, LocalDateTime end) {
+    public Page<BoardResponseDto> getAllBoard(HttpServletRequest servletRequest, int page, int view, LocalDateTime start, LocalDateTime end) {
         Sort sort = null;
 
         switch (view) {
             case 1 -> sort = Sort.by(Sort.Direction.DESC, "likecounts");
-            case 2 -> sort= Sort.by(Sort.Direction.ASC, "likecounts");
-            case 3 -> {if (start == null || end == null) throw new IllegalArgumentException("start와 end 날짜는 필수입니다.");
+            case 2 -> sort = Sort.by(Sort.Direction.ASC, "likecounts");
+            case 3 -> {
+                if (start == null || end == null) throw new IllegalArgumentException("start와 end 날짜는 필수입니다.");
                 sort = Sort.by(Sort.Direction.DESC, "createdTime");
             }
-            case 4 -> {if (start == null || end == null) throw new IllegalArgumentException("start와 end 날짜는 필수입니다.");
+            case 4 -> {
+                if (start == null || end == null) throw new IllegalArgumentException("start와 end 날짜는 필수입니다.");
                 sort = Sort.by(Sort.Direction.ASC, "createdTime");
             }
-            default ->  Sort.by(Sort.Direction.DESC, "likecounts");
+            default -> Sort.by(Sort.Direction.DESC, "likecounts");
         }
-        if(sort == null) sort = Sort.by(Sort.Direction.DESC, "createdTime");
+        if (sort == null) sort = Sort.by(Sort.Direction.DESC, "createdTime");
 
         Pageable pageable = PageRequest.of(page, 10, sort);
 
@@ -134,19 +135,17 @@ public class BoardService {
     }
 
 
-
     // 개시판 특정 조회
-    public BoardResponseDto get_board(long boardId) {
+    public BoardResponseDto getBoard(long boardId) {
         Board board = getBoard_long(boardId);
         long likeCount = getLikeCount(boardId);
-        return new BoardResponseDto(board,likeCount);
+        return new BoardResponseDto(board, likeCount);
     }
-
 
 
     // 개시판 특정 좋아요
     @Transactional
-    public BoardResponseDto get_board_like(HttpServletRequest servletRequest ,long boardId) {
+    public BoardResponseDto getBoardLike(HttpServletRequest servletRequest, long boardId) {
         Board board = getBoard_long(boardId);
         User user = jwt.getTokenUser(servletRequest);
 
@@ -159,12 +158,12 @@ public class BoardService {
         long likeCount = getLikeCount(boardId);
         board.setLikecounts(likeCount);
         String like_m = "좋아요를 누르셨습니다.";
-        return new BoardResponseDto(board,likeCount,like_m);
+        return new BoardResponseDto(board, likeCount, like_m);
     }
 
     // 개시판 특정 좋아요 삭제
     @Transactional
-    public BoardResponseDto get_board_nolike(HttpServletRequest servletRequest ,long boardId) {
+    public BoardResponseDto getBoardNolike(HttpServletRequest servletRequest, long boardId) {
         Board board = getBoard_long(boardId);
         User user = jwt.getTokenUser(servletRequest);
 
@@ -177,13 +176,13 @@ public class BoardService {
         long likeCount = getLikeCount(boardId);
         board.setLikecounts(likeCount);
         String like_m = "좋아요가 취소되었습니다.";
-        return new BoardResponseDto(board,likeCount,like_m);
+        return new BoardResponseDto(board, likeCount, like_m);
     }
 
     // 개시판 삭제
     @Transactional
 
-    public String delete_board(HttpServletRequest servletRequest, BoardRequestDto boardRequestDto) {
+    public String deleteBoard(HttpServletRequest servletRequest, BoardRequestDto boardRequestDto) {
         Board board = getStringBoard(servletRequest, boardRequestDto);
         boardRepository.delete(board);
         return "삭제 완료";
@@ -191,7 +190,7 @@ public class BoardService {
 
     // 개시판 수정
     @Transactional
-    public String update_board(HttpServletRequest servletRequest, BoardRequestDto boardRequestDto) {
+    public String updateBoard(HttpServletRequest servletRequest, BoardRequestDto boardRequestDto) {
         Board board = getStringBoard(servletRequest, boardRequestDto);
         board.update(boardRequestDto);
         return "수정완료";
@@ -200,7 +199,7 @@ public class BoardService {
 
     // 개시판 + 파일 업데이트
     @Transactional
-    public String update_m_board(HttpServletRequest servletRequest, MultipartFile image, MultipartFile movie, String board) {
+    public String updateMBoard(HttpServletRequest servletRequest, MultipartFile image, MultipartFile movie, String board) {
         try {
             User user = jwt.getTokenUser(servletRequest);
             Board new_board = getIdBoard(getStringBoard(board));
@@ -216,13 +215,13 @@ public class BoardService {
             multimedia.setBoard(new_board);
 
             if (image != null && !image.isEmpty() && image.getContentType() != null && image.getContentType().toLowerCase().contains("image")) {
-                String imageKey = "images/" + UUID.randomUUID().toString();
+                String imageKey = "images/" + UUID.randomUUID();
                 uploadFileToS3(imageKey, image.getBytes(), image.getContentType());
                 multimedia.setImageUrl(getS3Url(imageKey));
             }
 
             if (movie != null && !movie.isEmpty() && movie.getContentType() != null && (movie.getContentType().toLowerCase().contains("mp4") || movie.getContentType().toLowerCase().contains("avi"))) {
-                String movieKey = "movies/" + UUID.randomUUID().toString();
+                String movieKey = "movies/" + UUID.randomUUID();
                 uploadFileToS3(movieKey, movie.getBytes(), movie.getContentType());
                 multimedia.setMovieUrl(getS3Url(movieKey));
             }
@@ -233,10 +232,6 @@ public class BoardService {
         }
         return "수정 완료";
     }
-
-
-
-
 
 
     //:::::::::::::::::::/* 도구 상자 */:::::::::::::::::::
@@ -268,7 +263,7 @@ public class BoardService {
     //long값을 이용한 유져 가져오기
     private Board getBoard_long(long boardId) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException(boardId +"번의 개시판은 없습니다"));
+                .orElseThrow(() -> new IllegalArgumentException(boardId + "번의 개시판은 없습니다"));
 
         return board;
     }

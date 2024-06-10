@@ -1,17 +1,16 @@
 package com.sparta.newsfeed.entity;
 
 
-import com.sparta.newsfeed.dto.boardDto.BoardRequestDto;
+import com.sparta.newsfeed.dto.BoardDto.BoardRequestDto;
 import com.sparta.newsfeed.entity.User.User;
 import jakarta.persistence.*;
 import lombok.Getter;
-
 
 import java.util.List;
 
 @Getter
 @Entity
-public class Board extends Timer{
+public class Board extends Timer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +24,7 @@ public class Board extends Timer{
 
     // 유저
     @ManyToOne
-    @JoinColumn(name = "user_id" ,insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 
     private Long likecounts;
@@ -42,15 +41,11 @@ public class Board extends Timer{
     public Board() {
     }
 
-    public void setLikecounts(Long likecounts) {
-        this.likecounts = likecounts;
-    }
-
-
     public Board(User user, BoardRequestDto boardRequestDto) {
         this.user_id = user.getId();
         this.contents = boardRequestDto.getContents();
     }
+
 
     public Board(User user, BoardRequestDto boardRequestDto, Long likecounts) {
         this.user_id = user.getId();
@@ -58,7 +53,11 @@ public class Board extends Timer{
         this.likecounts = likecounts;
     }
 
-    public void update( BoardRequestDto boardRequestDto) {
+    public void setLikecounts(Long likecounts) {
+        this.likecounts = likecounts;
+    }
+
+    public void update(BoardRequestDto boardRequestDto) {
         this.contents = boardRequestDto.getContents();
     }
 }

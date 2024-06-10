@@ -7,7 +7,7 @@ import lombok.Setter;
 @Entity
 @Setter
 @Getter
-public class Multimedia extends Timer{
+public class Multimedia extends Timer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +18,7 @@ public class Multimedia extends Timer{
     private String MovieUrl;
 
     @OneToOne
-    @JoinColumn(name = "board_id" )
+    @JoinColumn(name = "board_id")
     private Board board;
 
 

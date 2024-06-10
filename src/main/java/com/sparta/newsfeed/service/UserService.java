@@ -32,7 +32,7 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     // 유저 프로필 가져오기
-    public UserResponseDto getUserProfile(HttpServletRequest request){
+    public UserResponseDto getUserProfile(HttpServletRequest request) {
         User user = jwtTokenProvider.getTokenUser(request);
         return new UserResponseDto(user);
     }
@@ -44,12 +44,12 @@ public class UserService {
         // 비밀번호 변경 여부 확인 및 처리
         if (userRequestDto.getPassword() != null && !userRequestDto.getPassword().isEmpty()) {
             // 현재 비밀번호 확인
-            if (!passwordEncoder.matches(userRequestDto.getPassword(),user.getPassword())) {
+            if (!passwordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
                 throw new IllegalArgumentException("유저 비밀번호가 올바르지 않습니다.");
             }
 
             // 새 비밀번호가 현재 비밀번호와 같은지 확인
-            if (passwordEncoder.matches(userRequestDto.getNewpassword(),user.getPassword())){
+            if (passwordEncoder.matches(userRequestDto.getNewpassword(), user.getPassword())) {
                 throw new IllegalArgumentException("새 비밀번호는 현재 비밀번호와 동일할 수 없습니다.");
             }
 
@@ -63,9 +63,9 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(newPassword));
             System.out.println("비밀번호 변경 완료");
         }
-        if(userRequestDto.getEmail()!=null)user.setEmail(userRequestDto.getEmail());
-        if(userRequestDto.getUsername()!=null)user.setUsername(userRequestDto.getUsername());
-        if(userRequestDto.getOne_liner()!=null)user.setOne_liner(userRequestDto.getOne_liner());
+        if (userRequestDto.getEmail() != null) user.setEmail(userRequestDto.getEmail());
+        if (userRequestDto.getUsername() != null) user.setUsername(userRequestDto.getUsername());
+        if (userRequestDto.getOne_liner() != null) user.setOne_liner(userRequestDto.getOne_liner());
 
 
         return "수정완료 'Get' 으로 확인해 주세요";
@@ -84,7 +84,7 @@ public class UserService {
         try {
             User user = jwtTokenProvider.getTokenUser(servletRequest);
             if (Pictur != null && !Pictur.isEmpty() && Pictur.getContentType() != null && Pictur.getContentType().toLowerCase().contains("image")) {
-                String PicturKey = "Pictur/" + UUID.randomUUID().toString();
+                String PicturKey = "Pictur/" + UUID.randomUUID();
                 uploadFileToS3(PicturKey, Pictur.getBytes(), Pictur.getContentType());
                 user.setPicturUrl(getS3Url(PicturKey));
             }
