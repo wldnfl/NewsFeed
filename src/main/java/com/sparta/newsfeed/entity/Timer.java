@@ -21,5 +21,5 @@ public abstract class Timer {
     @LastModifiedDate
     @Column
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime modifie_time;
+    private LocalDateTime modified_time;
 }
