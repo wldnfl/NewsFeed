@@ -128,7 +128,7 @@ public class SignUpService {
                 .orElseThrow(() -> new IllegalArgumentException("유저 이메일이 올바르지 않습니다."));
 
         // 이메일 제한시간 추가.
-        if (user.getSend_email_time().plusSeconds(30).isBefore(LocalDateTime.now())) {
+        if (user.getSend_email_time().plusSeconds(180).isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException(user.getEmail() +"로 발송한 이메일의 제한 시간이 만료되었습니다.");
         }
 
