@@ -6,6 +6,7 @@ import com.sparta.newsfeed.dto.CommentDto.CommentResponseDto;
 import com.sparta.newsfeed.entity.Board;
 import com.sparta.newsfeed.entity.Comment;
 import com.sparta.newsfeed.entity.Like_entity.ContentsLike;
+import com.sparta.newsfeed.entity.Like_entity.LikeContents;
 import com.sparta.newsfeed.entity.User_entity.User;
 import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import com.sparta.newsfeed.repository.BoardRepository;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -50,17 +52,25 @@ public class CommentService {
 
     //보드의 댓글 전부 조회
     @Transactional
-    public List<CommentResponseDto> board_comment( Long boardId) {
-        getBoard(boardId);
-        return commentRepository.findAll().stream().filter(C -> C.getBoard().getId().equals(boardId))
-                .map(CommentResponseDto ::new).toList();
+    public List<CommentResponseDto> board_comment(Long boardId) {
+        Board board = getBoard(boardId);
+        List<Comment> comments = commentRepository.findAllByBoard(board);
+
+        List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
+        for (Comment comment : comments) {
+            long likeCount = getLikeCount(comment.getId());
+            commentResponseDtos.add(new CommentResponseDto(comment, likeCount));
+        }
+        return commentResponseDtos;
     }
 
     // 특정 댓글 가져오기
     public CommentResponseDto board_comment_view(Long boardId, Long commentid) {
-        return new CommentResponseDto(getComment(commentid));}
+        long likeCount = getLikeCount(commentid);
+        return new CommentResponseDto(getComment(commentid), likeCount);}
 
     // 댓글 좋아요
+    @Transactional
     public CommentResponseDto board_comment_like(HttpServletRequest servletRequest, Long boardId, Long commentid) {
         Comment comment = getComment(commentid);
         User user = jwt.getTokenUser(servletRequest);
@@ -68,12 +78,12 @@ public class CommentService {
         if (contentsLikeRepository.existsByUserAndContents(user, comment.getId())) {
             throw new IllegalArgumentException("이미 좋아요를 눌렀습니다");
         }
-
         ContentsLike contentsLike = new ContentsLike(user, comment);
         contentsLikeRepository.save(contentsLike);
-
+        long likeCount = getLikeCount(commentid);
+        comment.setLikecounts(likeCount);
         String like_m = "좋아요를 누르셨습니다.";
-        return new CommentResponseDto(comment,like_m);
+        return new CommentResponseDto(comment, likeCount, like_m);
     }
 
     // 댓글 좋아요 취소
@@ -86,12 +96,14 @@ public class CommentService {
             throw new IllegalArgumentException("이미 좋아요를 눌렀습니다");
         }
 
-
         ContentsLike contentsLike = contentsLikeRepository.findByUserAndContents(user, comment.getId());
         contentsLikeRepository.delete(contentsLike);
+        long likeCount = getLikeCount(commentid);
+        comment.setLikecounts(likeCount);
         String like_m = "좋아요가 취소되었습니다.";
-        return new CommentResponseDto(comment,like_m);
+        return new CommentResponseDto(comment, likeCount, like_m);
     }
+
 
 
     //댓글 수정
@@ -112,6 +124,12 @@ public class CommentService {
             return "댓글 삭제 완료";
     }
 
+
+
+
+
+ //:::::::::::::::::::/* 도구 상자 */:::::::::::::::::::
+
     // 댓글 유저 확인
     private Comment getComment(HttpServletRequest servletRequest, Long commentId) {
         User user = jwt.getTokenUser(servletRequest);
@@ -130,6 +148,12 @@ public class CommentService {
         return  board;
 
     }
+
+    private long getLikeCount(Long commentid) {
+        long likeCount = contentsLikeRepository.countByLikeContentsAndContents(LikeContents.COMMENT, commentid);
+        return likeCount;
+    }
+
 
     // id로 Comment 가져오기
     private Comment getComment(Long commentId) {

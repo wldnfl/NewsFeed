@@ -19,30 +19,32 @@ public class CommentResponseDto {
 
     private Long like_count;
 
-    private String message;
+    private String massage;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime created_at;
+    private LocalDateTime create_at;
     private LocalDateTime modified_at;
 
 
-    public CommentResponseDto(Comment comment) {
+    public CommentResponseDto(Comment comment , long like_count ) {
     this.id = comment.getId();
     this.user_id = comment.getUser().getId();
     this.board_user_id = comment.getBoard().getUser().getId();
     this.contents = comment.getContents();
-    this.created_at = comment.getCreated_time();
+    this.create_at = comment.getCreated_time();
     this.modified_at = comment.getModified_time();
+    this.like_count = like_count;
     }
 
-    public CommentResponseDto(Comment comment , String massage) {
+    public CommentResponseDto(Comment comment , long like_count, String massage) {
         this.id = comment.getId();
         this.user_id = comment.getUser().getId();
         this.board_user_id = comment.getBoard().getUser().getId();
         this.contents = comment.getContents();
-        this.created_at = comment.getCreated_time();
+        this.create_at = comment.getCreated_time();
         this.modified_at = comment.getModified_time();
-        this.message = message;
+        this.like_count = like_count;
+        this.massage = massage;
     }
 
 

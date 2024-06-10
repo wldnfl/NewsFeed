@@ -21,6 +21,7 @@ public class Comment extends Timer {
     private Long user_id;
     private Long board_user_id;
     private String contents;
+    private Long Likecounts;
 
     @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
@@ -35,6 +36,10 @@ public class Comment extends Timer {
         this.user_id = user.getId();
         this.board_user_id = board.getUser_id();
         this.contents = commentRequestDto.getContents();
+    }
+
+    public void setLikecounts(Long likecounts) {
+        this.Likecounts = likecounts;
     }
 
     public void update(CommentRequestDto commentRequestDto) {
