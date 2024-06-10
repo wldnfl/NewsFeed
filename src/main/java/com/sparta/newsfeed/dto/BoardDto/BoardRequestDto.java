@@ -1,4 +1,4 @@
-package com.sparta.newsfeed.dto.boardDto;
+package com.sparta.newsfeed.dto.BoardDto;
 
 import lombok.Getter;
 
@@ -8,5 +8,4 @@ public class BoardRequestDto {
     private Long id;
     private Long user_id;
     private String contents;
-
 }

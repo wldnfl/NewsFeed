@@ -3,8 +3,8 @@ package com.sparta.newsfeed.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.sparta.newsfeed.dto.boardDto.BoardRequestDto;
-import com.sparta.newsfeed.dto.boardDto.BoardResponseDto;
+import com.sparta.newsfeed.dto.BoardDto.BoardRequestDto;
+import com.sparta.newsfeed.dto.BoardDto.BoardResponseDto;
 import com.sparta.newsfeed.entity.Board;
 import com.sparta.newsfeed.entity.Like_entity.ContentsLike;
 import com.sparta.newsfeed.entity.Like_entity.LikeContents;
@@ -25,10 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service

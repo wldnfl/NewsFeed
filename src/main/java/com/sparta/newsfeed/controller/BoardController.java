@@ -1,15 +1,14 @@
 package com.sparta.newsfeed.controller;
 
 
-import com.sparta.newsfeed.dto.boardDto.BoardRequestDto;
-import com.sparta.newsfeed.dto.boardDto.BoardResponseDto;
+import com.sparta.newsfeed.dto.BoardDto.BoardRequestDto;
+import com.sparta.newsfeed.dto.BoardDto.BoardResponseDto;
 import com.sparta.newsfeed.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 

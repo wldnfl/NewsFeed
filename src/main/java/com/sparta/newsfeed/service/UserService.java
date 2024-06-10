@@ -47,17 +47,17 @@ public class UserService {
             String newPassword = userRequestDto.getNewpassword();
             // 비밀번호 형식이 올바르지 않은 경우 예외 처리
             if (!isValidPasswordFormat(newPassword)) {
-                throw new IllegalArgumentException("올바르지 않은 비밀번호 형식입니다");
+                throw new IllegalArgumentException("올바르지 않은 비밀번호 형식입니다.");
             }
             user.setPassword(passwordEncoder.encode(newPassword));
-            System.out.println("비밀번호 변경 완료");
+            System.out.println("비밀번호 변경 완료!");
         }
         if(userRequestDto.getEmail()!=null)user.setEmail(userRequestDto.getEmail());
         if(userRequestDto.getUsername()!=null)user.setUsername(userRequestDto.getUsername());
         if(userRequestDto.getOne_liner()!=null)user.setOne_liner(userRequestDto.getOne_liner());
 
 
-        return "수정완료 'Get' 으로 확인해 주세요";
+        return "수정완료! 'Get' 으로 확인해 주세요";
     }
 
     // 비밀번호 형식이 올바른지 확인하는 메서드
