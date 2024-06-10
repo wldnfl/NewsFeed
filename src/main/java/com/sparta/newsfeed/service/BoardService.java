@@ -43,10 +43,12 @@ public class BoardService {
 
     // 개시판 생성
     // HttpServletRequest 는 유저 정보 받아오는거
+    @Transactional
     public String create_board(HttpServletRequest servletRequest, BoardRequestDto boardRequestDto) {
 
         User user = jwt.getTokenUser(servletRequest);
         Board board = new Board(user, boardRequestDto);
+        board.setLikecounts(0L);
         boardRepository.save(board);
         return board.getContents() + " 생성 완료";
     }
