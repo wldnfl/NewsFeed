@@ -1,8 +1,8 @@
 package com.sparta.newsfeed.repository;
 
-import com.sparta.newsfeed.entity.Like_entity.ContentsLike;
-import com.sparta.newsfeed.entity.Like_entity.LikeContents;
-import com.sparta.newsfeed.entity.User_entity.User;
+import com.sparta.newsfeed.entity.Like.ContentsLike;
+import com.sparta.newsfeed.entity.Like.LikeContents;
+import com.sparta.newsfeed.entity.User.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ContentsLikeRepository extends JpaRepository<ContentsLike, Long> {

@@ -5,16 +5,19 @@ import com.sparta.newsfeed.dto.UserDto.LoginUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserResponseDto;
-import com.sparta.newsfeed.dto.EmailDto.EmailRequestDto;
-import com.sparta.newsfeed.dto.EmailDto.ReVerifyEMailRequestDto;
+import com.sparta.newsfeed.dto.emaildto.EmailRequestDto;
+import com.sparta.newsfeed.dto.emaildto.ReVerifyEMailRequestDto;
 import com.sparta.newsfeed.service.SignUpService;
 import com.sparta.newsfeed.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -83,6 +86,14 @@ public class UserController {
     @Operation(summary = "유저 프로필 수정", tags = {"사용자"})
     public String updateUserProfile(HttpServletRequest request, @RequestBody UserRequestDto userRequestDto){
         return userService.updateUserProfile(request,userRequestDto);
+    }
+
+    // 유저 프로필 사진
+    @PatchMapping("/user/profile/m")
+    @Operation(summary = "유저 프로필 사진 넣기", tags = {"사용자"})
+    @Parameter(name = "Pictur",description = "사용자 사진")
+    public String PictureUserProfile(HttpServletRequest servletRequest, @RequestPart MultipartFile Pictur){
+        return userService.PictureUserProfile(servletRequest,Pictur);
     }
 
 }

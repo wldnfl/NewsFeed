@@ -13,18 +13,13 @@ public class Multimedia extends Timer{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Lob// 10 MB 저장 가능함
-    @Column(name = "image", columnDefinition = "MEDIUMBLOB")
-    private byte[] image;
+    private String ImageUrl;
 
-    @Lob // 200 MB 저장 가능함
-    @Column(name = "movie", columnDefinition = "LONGBLOB")
-    private byte[] movie;
+    private String MovieUrl;
 
     @OneToOne
     @JoinColumn(name = "board_id" )
     private Board board;
-
 
 
 }

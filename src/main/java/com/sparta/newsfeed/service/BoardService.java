@@ -3,13 +3,13 @@ package com.sparta.newsfeed.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.sparta.newsfeed.dto.BoardDto.BoardRequestDto;
-import com.sparta.newsfeed.dto.BoardDto.BoardResponseDto;
+import com.sparta.newsfeed.dto.boardDto.BoardRequestDto;
+import com.sparta.newsfeed.dto.boardDto.BoardResponseDto;
 import com.sparta.newsfeed.entity.Board;
-import com.sparta.newsfeed.entity.Like_entity.ContentsLike;
-import com.sparta.newsfeed.entity.Like_entity.LikeContents;
+import com.sparta.newsfeed.entity.Like.ContentsLike;
+import com.sparta.newsfeed.entity.Like.LikeContents;
 import com.sparta.newsfeed.entity.Multimedia;
-import com.sparta.newsfeed.entity.User_entity.User;
+import com.sparta.newsfeed.entity.User.User;
 import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import com.sparta.newsfeed.repository.BoardRepository;
 import com.sparta.newsfeed.repository.ContentsLikeRepository;
@@ -23,10 +23,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -50,9 +56,8 @@ public class BoardService {
         return board.getContents() + " 생성 완료";
     }
 
-    /*// 개시판 만들때 파일도 같이 넣음
+    // 개시판 만들때 파일도 같이 넣음
     public String create_m_board(HttpServletRequest servletRequest, MultipartFile image, MultipartFile movie, String board) {
-
         try {
             User user = jwt.getTokenUser(servletRequest);
             Board new_board = new Board(user, getStringBoard(board));
@@ -60,19 +65,49 @@ public class BoardService {
 
             Multimedia multimedia = new Multimedia();
             multimedia.setBoard(new_board);
+
             if (image != null && !image.isEmpty() && image.getContentType() != null && image.getContentType().toLowerCase().contains("image")) {
-                multimedia.setImage(image.getBytes());
+                String imageKey = "images/" + UUID.randomUUID().toString();
+                uploadFileToS3(imageKey, image.getBytes(), image.getContentType());
+                multimedia.setImageUrl(getS3Url(imageKey));
             }
 
             if (movie != null && !movie.isEmpty() && movie.getContentType() != null && (movie.getContentType().toLowerCase().contains("mp4") || movie.getContentType().toLowerCase().contains("avi"))) {
-                multimedia.setMovie(movie.getBytes());
+                String movieKey = "movies/" + UUID.randomUUID().toString();
+                uploadFileToS3(movieKey, movie.getBytes(), movie.getContentType());
+                multimedia.setMovieUrl(getS3Url(movieKey));
             }
+
             multimediaRepository.save(multimedia);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return "생성 완료";
-    }*/
+    }
+
+
+    // s3 사용
+    private void uploadFileToS3(String key, byte[] bytes, String contentType) {
+        if (bytes.length > 10 * 1024 * 1024 && contentType.toLowerCase().contains("image")) {
+            throw new IllegalArgumentException("이미지 용량이 너무 큽니다. 최대 10MB까지 업로드 가능합니다.");
+        } else if (bytes.length > 200 * 1024 * 1024 && (contentType.toLowerCase().contains("mp4") || contentType.toLowerCase().contains("avi"))) {
+            throw new IllegalArgumentException("동영상 용량이 너무 큽니다. 최대 200MB까지 업로드 가능합니다.");
+        }
+
+        try (S3Client s3Client = S3Client.builder().region(Region.AP_NORTHEAST_2).build()) {
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket("onebytenewsfeed")
+                    .key(key)
+                    .contentType(contentType)
+                    .build();
+            RequestBody requestBody = RequestBody.fromBytes(bytes);
+            PutObjectResponse putObjectResponse = s3Client.putObject(putObjectRequest, requestBody);
+        }
+    }
+
+    private String getS3Url(String key) {
+        return "https://onebytenewsfeed.s3.amazonaws.com/" + key;
+    }
 
     // 개시판 전채 조회
     @Transactional
@@ -174,17 +209,25 @@ public class BoardService {
             }
 
             new_board.update(getStringBoard(board));
-            Optional<Multimedia> multimedia = multimediaRepository.findById(new_board.getId());
-            if (multimedia.isEmpty()) throw new IllegalArgumentException("삽입된 멀티미딕어가 없습니다");
+            Optional<Multimedia> multimediaOptional = multimediaRepository.findById(new_board.getId());
+            if (multimediaOptional.isEmpty()) throw new IllegalArgumentException("삽입된 멀티미디어가 없습니다");
 
-            multimedia.get().setBoard(new_board);
+            Multimedia multimedia = multimediaOptional.get();
+            multimedia.setBoard(new_board);
+
             if (image != null && !image.isEmpty() && image.getContentType() != null && image.getContentType().toLowerCase().contains("image")) {
-                multimedia.get().setImage(image.getBytes());
+                String imageKey = "images/" + UUID.randomUUID().toString();
+                uploadFileToS3(imageKey, image.getBytes(), image.getContentType());
+                multimedia.setImageUrl(getS3Url(imageKey));
             }
 
             if (movie != null && !movie.isEmpty() && movie.getContentType() != null && (movie.getContentType().toLowerCase().contains("mp4") || movie.getContentType().toLowerCase().contains("avi"))) {
-                multimedia.get().setMovie(movie.getBytes());
+                String movieKey = "movies/" + UUID.randomUUID().toString();
+                uploadFileToS3(movieKey, movie.getBytes(), movie.getContentType());
+                multimedia.setMovieUrl(getS3Url(movieKey));
             }
+
+            multimediaRepository.save(multimedia);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -1,8 +1,8 @@
 package com.sparta.newsfeed.entity;
 
 
-import com.sparta.newsfeed.dto.BoardDto.BoardRequestDto;
-import com.sparta.newsfeed.entity.User_entity.User;
+import com.sparta.newsfeed.dto.boardDto.BoardRequestDto;
+import com.sparta.newsfeed.entity.User.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 
