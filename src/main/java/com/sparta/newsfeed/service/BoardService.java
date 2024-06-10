@@ -2,23 +2,28 @@ package com.sparta.newsfeed.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.sparta.newsfeed.dto.boardDto.BoardRequestDto;
 import com.sparta.newsfeed.dto.boardDto.BoardResponseDto;
 import com.sparta.newsfeed.entity.Board;
+import com.sparta.newsfeed.entity.Like_entity.ContentsLike;
 import com.sparta.newsfeed.entity.Multimedia;
 import com.sparta.newsfeed.entity.User_entity.User;
 import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import com.sparta.newsfeed.repository.BoardRepository;
+import com.sparta.newsfeed.repository.ContentsLikeRepository;
 import com.sparta.newsfeed.repository.MultimediaRepository;
-import com.sparta.newsfeed.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,6 +34,7 @@ public class BoardService {
     private final MultimediaRepository multimediaRepository;
     private final ObjectMapper objectMapper;
     private final JwtTokenProvider jwt;
+    private final ContentsLikeRepository contentsLikeRepository;
 
     // 개시판 생성
     // HttpServletRequest 는 유저 정보 받아오는거
@@ -40,8 +46,7 @@ public class BoardService {
         return board.getContents() + " 생성 완료";
     }
 
-    // 개시판 만들때 파일도 같이 넣음
-
+    /*// 개시판 만들때 파일도 같이 넣음
     public String create_m_board(HttpServletRequest servletRequest, MultipartFile image, MultipartFile movie, String board) {
 
         try {
@@ -63,24 +68,59 @@ public class BoardService {
             throw new RuntimeException(e);
         }
         return "생성 완료";
-    }
+    }*/
 
-    // 개시판 소유한 전채 조회
-    public List<BoardResponseDto> get_all_board(HttpServletRequest servletRequest) {
-        User user = jwt.getTokenUser(servletRequest);
-        List<Board> boards = boardRepository.findByUser_id(user.getId());
-        if (boards.isEmpty()) throw new IllegalArgumentException("사용자의 개시물이 없습니다.");
-        return boardRepository.findAll().stream().filter(B -> B.getUser_id().equals(1L)).map(BoardResponseDto::new).toList();
+    // 개시판 전채 조회
+    @Transactional
+    public Page<BoardResponseDto> get_all_board(HttpServletRequest servletRequest,int page) {
+        // 생성 날자 순이라면 결국 id 순
+        Pageable pageable = PageRequest.of(page, 10, Sort.Direction.DESC, "id");
+        Page<Board> boards = boardRepository.findAll(pageable);
+        return boards.map(BoardResponseDto::new);
     }
 
     // 개시판 특정 조회
-    public BoardResponseDto get_board(BoardRequestDto boardRequestDto) {
-        Board board = getIdBoard(boardRequestDto);
+    public BoardResponseDto get_board(long boardId) {
+        Board board = getBoard_long(boardId);
         return new BoardResponseDto(board);
+    }
+
+    // 개시판 특정 좋아요
+    public BoardResponseDto get_board_like(HttpServletRequest servletRequest ,long boardId) {
+        Board board = getBoard_long(boardId);
+        User user = jwt.getTokenUser(servletRequest);
+
+        if (contentsLikeRepository.existsByUserAndContents(user, board.getId())) {
+            throw new IllegalArgumentException("이미 좋아요를 눌렀습니다");
+        }
+
+        ContentsLike contentsLike = new ContentsLike(user, board);
+        contentsLikeRepository.save(contentsLike);
+
+        String like_m = "좋아요를 누르셨습니다.";
+        return new BoardResponseDto(board,like_m);
+    }
+
+    // 개시판 특정 좋아요 삭제
+    @Transactional
+    public BoardResponseDto get_board_nolike(HttpServletRequest servletRequest ,long boardId) {
+        Board board = getBoard_long(boardId);
+        User user = jwt.getTokenUser(servletRequest);
+
+        if (!contentsLikeRepository.existsByUserAndContents(user, board.getId())) {
+            throw new IllegalArgumentException("좋아요를 안눌렀습니다");
+        }
+
+        ContentsLike contentsLike = contentsLikeRepository.findByUserAndContents(user, board.getId());
+        contentsLikeRepository.delete(contentsLike);
+
+        String like_m = "좋아요가 취소되었습니다.";
+        return new BoardResponseDto(board,like_m);
     }
 
     // 개시판 삭제
     @Transactional
+
     public String delete_board(HttpServletRequest servletRequest, BoardRequestDto boardRequestDto) {
         Board board = getStringBoard(servletRequest, boardRequestDto);
         boardRepository.delete(board);
@@ -143,9 +183,18 @@ public class BoardService {
     }
 
     // 개시판 id로 찾아서 가셔오기
+
     private Board getIdBoard(BoardRequestDto boardRequestDto) {
         Optional<Board> boards = boardRepository.findById(boardRequestDto.getId());
         if (boards.isEmpty()) throw new NullPointerException("사용자의 개시물이 없습니다.");
         return boards.get();
+    }
+
+    //long값을 이용한 유져 가져오기
+    private Board getBoard_long(long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException(boardId +"번의 개시판은 없습니다"));
+
+        return board;
     }
 }

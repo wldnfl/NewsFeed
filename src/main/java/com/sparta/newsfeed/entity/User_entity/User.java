@@ -4,6 +4,7 @@ import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.entity.Board;
 import com.sparta.newsfeed.entity.Comment;
+import com.sparta.newsfeed.entity.Like_entity.ContentsLike;
 import com.sparta.newsfeed.entity.Timer;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -38,6 +39,11 @@ public class User extends Timer {
     // 이메일 발송 시간 기록.
     private LocalDateTime send_email_time;
 
+    // 유저의 상태코드. 기본값은 정상임.
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserStatus userStatus = UserStatus.ACTIVE;
+
     //개시판
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "user_id")
@@ -48,10 +54,12 @@ public class User extends Timer {
     @JoinColumn(name = "user_id")
     private List<Comment> commentList;
 
-    // 유저의 상태코드. 기본값은 정상임.
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserStatus userStatus = UserStatus.ACTIVE;
+    // 좋아요
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @JoinColumn(name = "user_id")
+    private List<ContentsLike> contentsLikeList;
+
+
 
     public User() {
     }

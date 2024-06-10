@@ -1,24 +1,33 @@
 package com.sparta.newsfeed.service;
 
+
 import com.sparta.newsfeed.dto.CommentDto.CommentRequestDto;
 import com.sparta.newsfeed.dto.CommentDto.CommentResponseDto;
 import com.sparta.newsfeed.entity.Board;
 import com.sparta.newsfeed.entity.Comment;
+import com.sparta.newsfeed.entity.Like_entity.ContentsLike;
 import com.sparta.newsfeed.entity.User_entity.User;
 import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import com.sparta.newsfeed.repository.BoardRepository;
 import com.sparta.newsfeed.repository.CommentRepository;
+import com.sparta.newsfeed.repository.ContentsLikeRepository;
 import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
 public class CommentService {
 
+
+
+    private final ContentsLikeRepository contentsLikeRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
     private final JwtTokenProvider jwt;
@@ -38,18 +47,52 @@ public class CommentService {
     }
 
 
-    //댓글 조회
+
+    //보드의 댓글 전부 조회
     @Transactional
     public List<CommentResponseDto> board_comment( Long boardId) {
-        Board board = getBoard(boardId);
-
-        if (board.getCommentList().isEmpty()) {
-            throw new IllegalArgumentException( "댓글이 없습니다.");
-        }
-
+        getBoard(boardId);
         return commentRepository.findAll().stream().filter(C -> C.getBoard().getId().equals(boardId))
                 .map(CommentResponseDto ::new).toList();
     }
+
+    // 특정 댓글 가져오기
+    public CommentResponseDto board_comment_view(Long boardId, Long commentid) {
+        return new CommentResponseDto(getComment(commentid));}
+
+    // 댓글 좋아요
+    public CommentResponseDto board_comment_like(HttpServletRequest servletRequest, Long boardId, Long commentid) {
+        Comment comment = getComment(commentid);
+        User user = jwt.getTokenUser(servletRequest);
+
+        if (contentsLikeRepository.existsByUserAndContents(user, comment.getId())) {
+            throw new IllegalArgumentException("이미 좋아요를 눌렀습니다");
+        }
+
+        ContentsLike contentsLike = new ContentsLike(user, comment);
+        contentsLikeRepository.save(contentsLike);
+
+        String like_m = "좋아요를 누르셨습니다.";
+        return new CommentResponseDto(comment,like_m);
+    }
+
+    // 댓글 좋아요 취소
+    @Transactional
+    public CommentResponseDto board_comment_nolike(HttpServletRequest servletRequest, Long boardId, Long commentid) {
+        Comment comment = getComment(commentid);
+        User user = jwt.getTokenUser(servletRequest);
+
+        if (contentsLikeRepository.existsByUserAndContents(user, comment.getId())) {
+            throw new IllegalArgumentException("이미 좋아요를 눌렀습니다");
+        }
+
+
+        ContentsLike contentsLike = contentsLikeRepository.findByUserAndContents(user, comment.getId());
+        contentsLikeRepository.delete(contentsLike);
+        String like_m = "좋아요가 취소되었습니다.";
+        return new CommentResponseDto(comment,like_m);
+    }
+
 
     //댓글 수정
     @Transactional
@@ -79,12 +122,12 @@ public class CommentService {
         return comment;
     }
 
-
     // id로 Board 가져오기
     private Board getBoard(Long id) {
-        return  boardRepository
-                .findById(id).orElseThrow(
+        Board board = boardRepository.findById(id).orElseThrow(
                         ()->new IllegalArgumentException("해당 개시판이 없습니다."));
+        if (board.getCommentList().isEmpty())throw new IllegalArgumentException( "댓글이 없습니다.");
+        return  board;
 
     }
 
@@ -94,6 +137,4 @@ public class CommentService {
                 .findById(commentId).orElseThrow(
                         ()-> new IllegalArgumentException("해당 개시판이 없습니다."));
     }
-
-
 }

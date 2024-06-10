@@ -11,12 +11,13 @@ import lombok.Setter;
 @Entity
 @Getter
 @NoArgsConstructor
+
 public class Comment extends Timer {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Long user_id;
     private Long board_user_id;
     private String contents;
