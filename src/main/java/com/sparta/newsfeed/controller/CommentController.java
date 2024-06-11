@@ -19,62 +19,62 @@ public class CommentController {
 
     @PostMapping("/{boardId}/comment")
     @Operation(summary = "댓글 생성", tags = {"댓글"})
-    public String create_comment(
+    public String createComment(
             HttpServletRequest servletRequest,
             @PathVariable Long boardId,
-            @RequestBody CommentRequestDto commentRequestDto){
-        return commentService.create_comment(servletRequest,boardId,commentRequestDto);
+            @RequestBody CommentRequestDto commentRequestDto) {
+        return commentService.createComment(servletRequest, boardId, commentRequestDto);
     }
 
     @GetMapping("/{boardId}/comment")
     @Operation(summary = "개시판의 댓글 조회", tags = {"댓글"})
-    public List<CommentResponseDto> board_comment(
-            @PathVariable Long boardId){
-        return commentService.board_comment(boardId);
+    public List<CommentResponseDto> boardComment(
+            @PathVariable Long boardId) {
+        return commentService.boardComment(boardId);
     }
 
-    @GetMapping("/{boardId}/comment{commentid}")
+    @GetMapping("/{boardId}/comment/{commentid}")
     @Operation(summary = "개시판의 댓글 조회", tags = {"댓글"})
-    public CommentResponseDto board_comment_view(
+    public CommentResponseDto boardCommentView(
             @PathVariable Long boardId,
-            @PathVariable Long commentid){
-        return commentService.board_comment_view(boardId,commentid);
+            @PathVariable Long commentid) {
+        return commentService.boardCommentView(boardId, commentid);
     }
 
     @GetMapping("/{boardId}/comment/{commentid}/like")
     @Operation(summary = "개시판의 특정 댓글 좋아요", tags = {"댓글"})
-    public CommentResponseDto board_comment_like(
+    public CommentResponseDto boardCommentLike(
             HttpServletRequest servletRequest,
             @PathVariable Long boardId,
-            @PathVariable Long commentid){
-        return commentService.board_comment_like(servletRequest,boardId,commentid);
+            @PathVariable Long commentid) {
+        return commentService.boardCommentLike(servletRequest, boardId, commentid);
     }
 
     @GetMapping("/{boardId}/comment/{commentid}/nolike")
     @Operation(summary = "개시판의 특정 댓글 좋아요 취소", tags = {"댓글"})
-    public CommentResponseDto board_comment_nolike(
+    public CommentResponseDto boardCommentNolike(
             HttpServletRequest servletRequest,
             @PathVariable Long boardId,
-            @PathVariable Long commentid){
-        return commentService.board_comment_nolike(servletRequest,boardId,commentid);
+            @PathVariable Long commentid) {
+        return commentService.boardCommentNolike(servletRequest, boardId, commentid);
     }
 
     @PatchMapping("/{boardId}/comment/{commentId}")
     @Operation(summary = "댓글 수정", tags = {"댓글"})
-  
-    public String update_comment(
+
+    public String updateComment(
             HttpServletRequest servletRequest,
             @PathVariable Long commentId,
             @PathVariable Long boardId,
-            @RequestBody CommentRequestDto commentRequestDto){
-        return commentService.update_comment(servletRequest,boardId,commentId, commentRequestDto);
+            @RequestBody CommentRequestDto commentRequestDto) {
+        return commentService.updateComment(servletRequest, boardId, commentId, commentRequestDto);
     }
 
     @DeleteMapping("/{boardId}/comment/{commentId}")
     @Operation(summary = "댓글 삭재", tags = {"댓글"})
-    public String delete_comment(
-            HttpServletRequest servletRequest,@PathVariable long commentId, @PathVariable long boardId) {
-        return commentService.delete(servletRequest,commentId);
+    public String deleteComment(
+            HttpServletRequest servletRequest, @PathVariable long commentId, @PathVariable long boardId) {
+        return commentService.delete(servletRequest, commentId);
 
     }
 }

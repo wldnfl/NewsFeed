@@ -1,10 +1,13 @@
 package com.sparta.newsfeed.service;
 
+import com.sparta.newsfeed.dto.FollowDto.FollowRequestDto;
+import com.sparta.newsfeed.dto.FollowDto.FollowResponseDto;
+import com.sparta.newsfeed.dto.FollowDto.FollowStatusResponseDto;
 import com.sparta.newsfeed.entity.Follow;
-import com.sparta.newsfeed.entity.User_entity.User;
+import com.sparta.newsfeed.entity.User.User;
+import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import com.sparta.newsfeed.repository.FollowRepository;
 import com.sparta.newsfeed.repository.UserRepository;
-import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,53 +22,45 @@ public class FollowService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public String followUser(Long followeeId, HttpServletRequest request) {
+    public FollowResponseDto followUser(FollowRequestDto requestDto, HttpServletRequest request) {
         User follower = jwtTokenProvider.getTokenUser(request);
-        User followee = userRepository.findById(followeeId)
+        User followee = userRepository.findById(requestDto.getFolloweeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        // 자기 자신을 팔로우하려고 할 때 예외 처리
         if (follower.getId().equals(followee.getId())) {
-            throw new IllegalArgumentException("자기 자신을 팔로우할 수 없습니다.");
+            return new FollowResponseDto("본인을 팔로우할 수 없습니다.");
         }
 
         if (followRepository.findByFollowerAndFollowee(follower, followee).isPresent()) {
-            throw new IllegalArgumentException("이미 팔로우한 사용자입니다.");
+            return new FollowResponseDto(followee.getUsername() + "을(를) 이미 팔로우하고 있습니다.");
         }
 
-        Follow follow = new Follow();
-        follow.setFollower(follower);
-        follow.setFollowee(followee);
+        Follow follow = new Follow(follower, followee);
         followRepository.save(follow);
-
-        return followee.getUsername() + "님 팔로우 성공!";
+        return new FollowResponseDto(followee.getUsername() + "을(를) 팔로우했습니다.");
     }
-
 
     @Transactional
-    public String unfollowUser(Long followeeId, HttpServletRequest request) {
+    public FollowResponseDto unfollowUser(FollowRequestDto requestDto, HttpServletRequest request) {
         User follower = jwtTokenProvider.getTokenUser(request);
-        User followee = userRepository.findById(followeeId)
+        User followee = userRepository.findById(requestDto.getFolloweeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-
-        // 자기 자신을 언팔로우하려고 할 때 예외 처리
-        if (follower.getId().equals(followee.getId())) {
-            throw new IllegalArgumentException("자기 자신을 언팔로우할 수 없습니다.");
-        }
 
         Follow follow = followRepository.findByFollowerAndFollowee(follower, followee)
-                .orElseThrow(() -> new IllegalArgumentException("팔로우하지 않은 사용자입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(followee.getUsername() + "을(를) 팔로우하고 있지 않습니다."));
 
         followRepository.delete(follow);
-
-        return followee.getUsername() + "님 언팔로우 성공!";
+        return new FollowResponseDto(followee.getUsername() + "을(를) 언팔로우했습니다.");
     }
 
-    public boolean isFollowing(Long followeeId, HttpServletRequest request) {
+    public FollowStatusResponseDto checkFollowStatus(Long followeeId, HttpServletRequest request) {
         User follower = jwtTokenProvider.getTokenUser(request);
         User followee = userRepository.findById(followeeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        return followRepository.findByFollowerAndFollowee(follower, followee).isPresent();
+        boolean isFollowing = followRepository.findByFollowerAndFollowee(follower, followee).isPresent();
+        String message = isFollowing ? follower.getUsername() + "은(는) " + followee.getUsername() + "을(를) 팔로우하고 있습니다."
+                : follower.getUsername() + "은(는) " + followee.getUsername() + "을(를) 팔로우하고 있지 않습니다.";
+        return new FollowStatusResponseDto(message);
     }
 }

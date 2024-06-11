@@ -1,6 +1,6 @@
 package com.sparta.newsfeed.jwt.util;
 
-import com.sparta.newsfeed.entity.User_entity.User;
+import com.sparta.newsfeed.entity.User.User;
 import com.sparta.newsfeed.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

@@ -1,5 +1,8 @@
 package com.sparta.newsfeed.controller;
 
+import com.sparta.newsfeed.dto.FollowDto.FollowRequestDto;
+import com.sparta.newsfeed.dto.FollowDto.FollowResponseDto;
+import com.sparta.newsfeed.dto.FollowDto.FollowStatusResponseDto;
 import com.sparta.newsfeed.service.FollowService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,19 +18,21 @@ public class FollowController {
 
     @PostMapping("/follow/{followeeId}")
     @Operation(summary = "팔로우", tags = {"팔로우"})
-    public String followUser(@PathVariable Long followeeId, HttpServletRequest request) {
-        return followService.followUser(followeeId, request);
+    public FollowResponseDto followUser(@PathVariable Long followeeId, HttpServletRequest request) {
+        FollowRequestDto requestDto = new FollowRequestDto(followeeId);
+        return followService.followUser(requestDto, request);
     }
 
     @DeleteMapping("/follow/{followeeId}")
     @Operation(summary = "언팔로우", tags = {"팔로우"})
-    public String unfollowUser(@PathVariable Long followeeId, HttpServletRequest request) {
-        return followService.unfollowUser(followeeId, request);
+    public FollowResponseDto unfollowUser(@PathVariable Long followeeId, HttpServletRequest request) {
+        FollowRequestDto requestDto = new FollowRequestDto(followeeId);
+        return followService.unfollowUser(requestDto, request);
     }
 
     @GetMapping("/follow/status/{followeeId}")
     @Operation(summary = "팔로우 상태 확인", tags = {"팔로우"})
-    public boolean isFollowing(@PathVariable Long followeeId, HttpServletRequest request) {
-        return followService.isFollowing(followeeId, request);
+    public FollowStatusResponseDto checkFollowStatus(@PathVariable Long followeeId, HttpServletRequest request) {
+        return followService.checkFollowStatus(followeeId, request);
     }
 }

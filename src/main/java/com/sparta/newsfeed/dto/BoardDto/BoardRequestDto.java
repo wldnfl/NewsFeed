@@ -8,4 +8,5 @@ public class BoardRequestDto {
     private Long id;
     private Long user_id;
     private String contents;
+
 }

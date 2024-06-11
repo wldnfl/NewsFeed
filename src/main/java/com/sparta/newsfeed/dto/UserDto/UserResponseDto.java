@@ -1,15 +1,15 @@
 package com.sparta.newsfeed.dto.UserDto;
 
-import com.sparta.newsfeed.entity.User_entity.User;
+import com.sparta.newsfeed.entity.User.User;
 import lombok.Getter;
 
 @Getter
 public class UserResponseDto {
 
-    private Long id;
-    private String username;
-    private String email;
-    private String One_liner;
+    private final Long id;
+    private final String username;
+    private final String email;
+    private final String One_liner;
 
     public UserResponseDto(User user) {
         this.id = user.getId();

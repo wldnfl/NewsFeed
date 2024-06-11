@@ -35,23 +35,23 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);  // JWT 토큰을 사용할 것이기에 CSRF 보호는 비활성화 한다.
 
         http.authorizeHttpRequests((authorizeRequests) ->
-                authorizeRequests
-                        .requestMatchers(
-                                "/",
-                                "/api/user/sign",
-                                "/api/user/login",
-                                "/api/user/verify",
-                                "/api/user/reverify",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/swagger-ui.html"
-                        ).permitAll() // 인증 없이 접속이 가능한 페이지들 설정.
-                        .anyRequest().authenticated() // 그 외 요청은 모두 인증이 필요하게 설정
+                                           authorizeRequests
+                                                   .requestMatchers(
+                                                           "/",
+                                                           "/api/user/sign",
+                                                           "/api/user/login",
+                                                           "/api/user/verify",
+                                                           "/api/user/reverify",
+                                                           "/swagger-ui/**",
+                                                           "/v3/api-docs/**",
+                                                           "/swagger-ui.html"
+                                                   ).permitAll() // 인증 없이 접속이 가능한 페이지들 설정.
+                                                   .anyRequest().authenticated() // 그 외 요청은 모두 인증이 필요하게 설정
         );
 
         // 세션을 사용하지 않고 JWT 만을 사용하게 설정
         http.sessionManagement((sessionManagement) ->
-                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                                       sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
 
         // JWT 필터 등록

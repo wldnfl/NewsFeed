@@ -1,6 +1,8 @@
 package com.sparta.newsfeed.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -15,11 +17,9 @@ public abstract class Timer {
 
     @CreatedDate
     @Column(updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdTime;
 
     @LastModifiedDate
     @Column
-    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime modifiedTime;
 }
