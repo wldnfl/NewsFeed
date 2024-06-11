@@ -1,25 +1,27 @@
 # NewsFeed
-## Member
-[조규성](https://github.com/Imnotcoderdude)
-[한정운](https://github.com/Rehamus)
-[이지우](https://github.com/wldnfl)
-[김민식](https://github.com/minsik0)
+## Member : [조규성](https://github.com/Imnotcoderdude), [한정운](https://github.com/Rehamus), [이지우](https://github.com/wldnfl), [김민식](https://github.com/minsik0)
+
 
 ## 사용 기술
 - Framework : Spring Boot
 - Database : MySQL
   
+  
 ## ERD Diagram
 ![image](https://github.com/Team1-NewsFeed/NewsFeed/assets/102974424/910e6bbc-6568-42ae-a7f2-f77c593c9c23)
 
+
 ## API 명세서
-![image](https://github.com/Team1-NewsFeed/NewsFeed/assets/102974424/ce083858-b6e5-47ad-855e-2d310f28cd05)
+![image](https://github.com/Team1-NewsFeed/NewsFeed/assets/102974424/49d87105-8d65-4972-bd9f-f7bccd478f82)
+
 
 ## 와이어프레임
 [NewsFeed Project Figma](https://www.figma.com/design/5pduGiz0jkZ1E8cjcgZKrK/%EB%89%B4%EC%8A%A4%ED%94%BC%EB%93%9C-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8?node-id=0-1)
 
+
 ## 시연 영상
 [NewsFeed Project Video](https://www.youtube.com/watch?v=iEMXNumVoac)
+
 
 ## 필수 기능 
 ### 📌 사용자 인증 기능 - 회원 가입, 회원 탈퇴, 로그인, 로그아웃
