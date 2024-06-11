@@ -15,7 +15,8 @@
 <br>
 
 ### 📗 API 명세서
-![image](https://github.com/Team1-NewsFeed/NewsFeed/assets/102974424/49d87105-8d65-4972-bd9f-f7bccd478f82)
+[🔗 NewsFeed Project API 명세서](https://documenter.getpostman.com/view/29105336/2sA3XMhi1m)
+
 
 <br>
 
