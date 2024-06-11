@@ -41,6 +41,7 @@ public class FollowService {
         return followee.getUsername() + "님 팔로우 성공!";
     }
 
+
     @Transactional
     public String unfollowUser(Long followeeId, HttpServletRequest request) {
         User follower = jwtTokenProvider.getTokenUser(request);
