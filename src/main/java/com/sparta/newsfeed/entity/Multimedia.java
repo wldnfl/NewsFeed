@@ -21,5 +21,4 @@ public class Multimedia extends Timer {
     @JoinColumn(name = "board_id")
     private Board board;
 
-
 }

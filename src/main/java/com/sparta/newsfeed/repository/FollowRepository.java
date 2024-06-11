@@ -1,6 +1,7 @@
 package com.sparta.newsfeed.repository;
 
 import com.sparta.newsfeed.entity.Follow;
+
 import com.sparta.newsfeed.entity.Users.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

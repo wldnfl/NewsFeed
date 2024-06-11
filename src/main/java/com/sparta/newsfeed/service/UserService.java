@@ -54,7 +54,7 @@ public class UserService {
             }
 
             // 새 비밀번호를 설정
-            // 아 이거 new 패스워드가 아니라 기존 패스워드 가져온거네
+            //아 이거 new 페스워드가 아니라 기존 패스워드 가져온거네
             String newPassword = userRequestDto.getNewpassword();
             // 비밀번호 형식이 올바르지 않은 경우 예외 처리
             if (!isValidPasswordFormat(newPassword)) {

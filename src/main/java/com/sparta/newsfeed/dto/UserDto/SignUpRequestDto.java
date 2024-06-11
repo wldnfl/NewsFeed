@@ -40,5 +40,5 @@ public class SignUpRequestDto {
     private String one_liner = "one_liner ";
 
     //유저 상태 코드
-    private UserStatus userStatus = UserStatus.ACTIVE;
+    private final UserStatus userStatus = UserStatus.ACTIVE;
 }
