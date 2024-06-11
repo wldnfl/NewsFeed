@@ -1,30 +1,30 @@
-# NewsFeed
-## Member : [조규성](https://github.com/Imnotcoderdude), [한정운](https://github.com/Rehamus), [이지우](https://github.com/wldnfl), [김민식](https://github.com/minsik0)
+# 📰 NewsFeed Project
+### Member : [조규성](https://github.com/Imnotcoderdude), [한정운](https://github.com/Rehamus), [이지우](https://github.com/wldnfl), [김민식](https://github.com/minsik0)
+<br>
 
-
-## 사용 기술
+### 🛠️ 사용 기술
 - Framework : Spring Boot
 - Database : MySQL
+<br>
   
-  
-## ERD Diagram
-![image](https://github.com/Team1-NewsFeed/NewsFeed/assets/102974424/910e6bbc-6568-42ae-a7f2-f77c593c9c23)
+### 📕 ERD Diagram
+[🔗 NewsFeed Project ERD Diagram](https://www.erdcloud.com/d/AuGfu3qaR7JR7odai)
+<br>
 
-
-## API 명세서
+### 📗 API 명세서
 ![image](https://github.com/Team1-NewsFeed/NewsFeed/assets/102974424/49d87105-8d65-4972-bd9f-f7bccd478f82)
+<br>
 
+### 📘 와이어프레임
+[🔗 NewsFeed Project Figma](https://www.figma.com/design/5pduGiz0jkZ1E8cjcgZKrK/%EB%89%B4%EC%8A%A4%ED%94%BC%EB%93%9C-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8?node-id=0-1)
+<br>
 
-## 와이어프레임
-[NewsFeed Project Figma](https://www.figma.com/design/5pduGiz0jkZ1E8cjcgZKrK/%EB%89%B4%EC%8A%A4%ED%94%BC%EB%93%9C-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8?node-id=0-1)
+### 📙 시연 영상
+[🔗 NewsFeed Project Video](https://www.youtube.com/watch?v=iEMXNumVoac)
+<br>
 
-
-## 시연 영상
-[NewsFeed Project Video](https://www.youtube.com/watch?v=iEMXNumVoac)
-
-
-## 필수 기능 
-### 📌 사용자 인증 기능 - 회원 가입, 회원 탈퇴, 로그인, 로그아웃
+### 🔖 필수 기능 
+#### 📌 사용자 인증 기능 - 회원 가입, 회원 탈퇴, 로그인, 로그아웃
 - **사용자 인증 기능 공통 조건**
   
     - **Spring Security**와 **JWT**를 사용하여 설계 및 구현합니다.
@@ -86,7 +86,7 @@
         - 로그아웃 시, 발행한 토큰은 **초기화** 합니다.
         - 로그아웃 후 초기화 된 `Refresh Token`은 재사용할 수 없고, 재로그인해야 합니다.
      
-### 📌 프로필 관리 기능 - 프로필 조회, 프로필 수정 
+#### 📌 프로필 관리 기능 - 프로필 조회, 프로필 수정 
 - **프로필 조회 기능**
     - **사용자 ID, 이름, 한 줄 소개, 이메일**을 볼 수 있습니다.
     - **ID(사용자 ID X), 비밀번호, 생성일자, 수정일자**와 같은 데이터는 노출하지 않습니다.
@@ -103,7 +103,8 @@
         - 비밀번호 형식이 올바르지 않은 경우
         - 현재 비밀번호와 동일한 비밀번호로 수정하는 경우
      
-  ### 📌 뉴스피드 게시물 CRUD 기능 - 게시물 작성/조회/수정/삭제, 뉴스피드 조회
+
+#### 📌 뉴스피드 게시물 CRUD 기능 - 게시물 작성/조회/수정/삭제, 뉴스피드 조회
   - **게시물 작성, 조회, 수정, 삭제 기능**
     
     게시물 조회는 모든 사용자가 조회할 수 있습니다.
@@ -122,4 +123,4 @@
         - 모든 사용자는 전체 뉴스피드를 조회할 수 있습니다.
         - 기본 정렬은 **생성일자 기준으로 최신순**으로 정렬합니다.
      
-## 추가 기능
+### 🔖 추가 기능
