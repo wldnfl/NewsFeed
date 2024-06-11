@@ -5,9 +5,9 @@ import com.sparta.newsfeed.dto.CommentDto.CommentRequestDto;
 import com.sparta.newsfeed.dto.CommentDto.CommentResponseDto;
 import com.sparta.newsfeed.entity.Board;
 import com.sparta.newsfeed.entity.Comment;
-import com.sparta.newsfeed.entity.Like.ContentsLike;
-import com.sparta.newsfeed.entity.Like.LikeContents;
-import com.sparta.newsfeed.entity.User.User;
+import com.sparta.newsfeed.entity.Likes.ContentsLike;
+import com.sparta.newsfeed.entity.Likes.LikeContents;
+import com.sparta.newsfeed.entity.Users.User;
 import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import com.sparta.newsfeed.repository.BoardRepository;
 import com.sparta.newsfeed.repository.CommentRepository;
@@ -51,7 +51,7 @@ public class CommentService {
     public List<CommentResponseDto> boardComment(Long boardId) {
         Board board = getBoard(boardId);
         List<Comment> comments = commentRepository.findAllByBoard(board);
-
+        if (board.getCommentList().isEmpty()) throw new IllegalArgumentException("댓글이 없습니다.");
         List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
         for (Comment comment : comments) {
             long likeCount = getLikeCount(comment.getId());
@@ -72,10 +72,11 @@ public class CommentService {
         Comment comment = getComment(commentid);
         User user = jwt.getTokenUser(servletRequest);
 
-        if (contentsLikeRepository.existsByUserAndContents(user, comment.getId())) {
+        if (contentsLikeRepository.existsByUser_IdAndLikeContentsAndContents(user.getId(), LikeContents.COMMENT , comment.getId())) {
             throw new IllegalArgumentException("이미 좋아요를 눌렀습니다");
         }
         ContentsLike contentsLike = new ContentsLike(user, comment);
+        user.getContentsLikeList().add(contentsLike);
         contentsLikeRepository.save(contentsLike);
         long likeCount = getLikeCount(commentid);
         comment.setLikecounts(likeCount);
@@ -89,8 +90,8 @@ public class CommentService {
         Comment comment = getComment(commentid);
         User user = jwt.getTokenUser(servletRequest);
 
-        if (contentsLikeRepository.existsByUserAndContents(user, comment.getId())) {
-            throw new IllegalArgumentException("이미 좋아요를 눌렀습니다");
+        if (!contentsLikeRepository.existsByUser_IdAndLikeContentsAndContents(user.getId(), LikeContents.COMMENT , comment.getId())) {
+            throw new IllegalArgumentException("좋아요를 누르지 않았습니다");
         }
 
         ContentsLike contentsLike = contentsLikeRepository.findByUserAndContents(user, comment.getId());
@@ -105,7 +106,8 @@ public class CommentService {
     //댓글 수정
     @Transactional
     public String updateComment(HttpServletRequest servletRequest, Long boardId, Long commentId, CommentRequestDto commentRequestDto) {
-        getBoard(boardId);
+        Board board = getBoard(boardId);
+        if (board.getCommentList().isEmpty()) throw new IllegalArgumentException("댓글이 없습니다.");
         Comment comment = getComment(servletRequest, commentId);
         String content = comment.getContents();
         comment.update(commentRequestDto);
@@ -135,10 +137,8 @@ public class CommentService {
 
     // id로 Board 가져오기
     private Board getBoard(Long id) {
-        Board board = boardRepository.findById(id).orElseThrow(
+        return boardRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 개시판이 없습니다."));
-        if (board.getCommentList().isEmpty()) throw new IllegalArgumentException("댓글이 없습니다.");
-        return board;
 
     }
 

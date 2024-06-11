@@ -1,45 +1,44 @@
-package com.sparta.newsfeed.entity.Like;
-
+package com.sparta.newsfeed.entity.Likes;
 
 import com.sparta.newsfeed.entity.Board;
 import com.sparta.newsfeed.entity.Comment;
 import com.sparta.newsfeed.entity.Timer;
-import com.sparta.newsfeed.entity.User.User;
+import com.sparta.newsfeed.entity.Users.User;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @Entity
+@NoArgsConstructor
 public class ContentsLike extends Timer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    //유저 아이디
-    private Long userid;
-    //콘텐츠 ID
+
+    // 콘텐츠 ID
     private Long contents;
-    //콘텐츠 유형
+
+    // 콘텐츠 유형
     @Enumerated(EnumType.STRING)
     private LikeContents likeContents;
 
     // 유저
     @ManyToOne
-    @JoinColumn(name = "userid", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
-
-    public ContentsLike() {
-    }
-
     public ContentsLike(User user, Board board) {
-        this.userid = user.getId();
+        this.user = user;
         this.likeContents = LikeContents.BOARD;
         this.contents = board.getId();
     }
 
     public ContentsLike(User user, Comment comment) {
-        this.userid = user.getId();
+        this.user = user;
         this.likeContents = LikeContents.COMMENT;
         this.contents = comment.getId();
     }

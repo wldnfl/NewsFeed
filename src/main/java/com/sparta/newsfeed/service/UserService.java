@@ -3,7 +3,7 @@ package com.sparta.newsfeed.service;
 
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserResponseDto;
-import com.sparta.newsfeed.entity.User.User;
+import com.sparta.newsfeed.entity.Users.User;
 import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import com.sparta.newsfeed.repository.MultimediaRepository;
 import com.sparta.newsfeed.repository.UserRepository;

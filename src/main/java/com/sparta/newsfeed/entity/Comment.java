@@ -1,7 +1,7 @@
 package com.sparta.newsfeed.entity;
 
 import com.sparta.newsfeed.dto.CommentDto.CommentRequestDto;
-import com.sparta.newsfeed.entity.User.User;
+import com.sparta.newsfeed.entity.Users.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

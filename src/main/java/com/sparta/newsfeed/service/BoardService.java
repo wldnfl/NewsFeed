@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.newsfeed.dto.BoardDto.BoardRequestDto;
 import com.sparta.newsfeed.dto.BoardDto.BoardResponseDto;
 import com.sparta.newsfeed.entity.Board;
-import com.sparta.newsfeed.entity.Like.ContentsLike;
-import com.sparta.newsfeed.entity.Like.LikeContents;
+import com.sparta.newsfeed.entity.Likes.ContentsLike;
+import com.sparta.newsfeed.entity.Likes.LikeContents;
 import com.sparta.newsfeed.entity.Multimedia;
-import com.sparta.newsfeed.entity.User.User;
+import com.sparta.newsfeed.entity.Users.User;
 import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import com.sparta.newsfeed.repository.BoardRepository;
 import com.sparta.newsfeed.repository.ContentsLikeRepository;
@@ -56,11 +56,11 @@ public class BoardService {
     }
 
     // 개시판 만들때 파일도 같이 넣음
+    @Transactional
     public String createMBoard(HttpServletRequest servletRequest, MultipartFile image, MultipartFile movie, String board) {
         try {
             User user = jwt.getTokenUser(servletRequest);
             Board new_board = new Board(user, getStringBoard(board));
-            boardRepository.save(new_board);
 
             Multimedia multimedia = new Multimedia();
             multimedia.setBoard(new_board);
@@ -76,7 +76,8 @@ public class BoardService {
                 uploadFileToS3(movieKey, movie.getBytes(), movie.getContentType());
                 multimedia.setMovieUrl(getS3Url(movieKey));
             }
-
+            new_board.setLikecounts(0L);
+            boardRepository.save(new_board);
             multimediaRepository.save(multimedia);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -124,7 +125,7 @@ public class BoardService {
                 if (start == null || end == null) throw new IllegalArgumentException("start와 end 날짜는 필수입니다.");
                 sort = Sort.by(Sort.Direction.ASC, "createdTime");
             }
-            default -> Sort.by(Sort.Direction.DESC, "likecounts");
+            default -> Sort.by(Sort.Direction.ASC, "likecounts");
         }
         if (sort == null) sort = Sort.by(Sort.Direction.DESC, "createdTime");
 
@@ -149,11 +150,12 @@ public class BoardService {
         Board board = getBoard_long(boardId);
         User user = jwt.getTokenUser(servletRequest);
 
-        if (contentsLikeRepository.existsByUserAndContents(user, board.getId())) {
+        if (contentsLikeRepository.existsByUser_IdAndLikeContentsAndContents(user.getId(), LikeContents.BOARD , board.getId())) {
             throw new IllegalArgumentException("이미 좋아요를 눌렀습니다");
         }
 
         ContentsLike contentsLike = new ContentsLike(user, board);
+        user.getContentsLikeList().add(contentsLike);
         contentsLikeRepository.save(contentsLike);
         long likeCount = getLikeCount(boardId);
         board.setLikecounts(likeCount);
@@ -167,7 +169,7 @@ public class BoardService {
         Board board = getBoard_long(boardId);
         User user = jwt.getTokenUser(servletRequest);
 
-        if (!contentsLikeRepository.existsByUserAndContents(user, board.getId())) {
+        if (!contentsLikeRepository.existsByUser_IdAndLikeContentsAndContents(user.getId(), LikeContents.BOARD , board.getId())) {
             throw new IllegalArgumentException("좋아요를 안눌렀습니다");
         }
 

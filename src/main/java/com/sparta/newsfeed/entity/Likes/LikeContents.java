@@ -1,4 +1,4 @@
-package com.sparta.newsfeed.entity.Like;
+package com.sparta.newsfeed.entity.Likes;
 
 public enum LikeContents {
     BOARD,

@@ -1,7 +1,7 @@
 package com.sparta.newsfeed.dto.UserDto;
 
 
-import com.sparta.newsfeed.entity.User.UserStatus;
+import com.sparta.newsfeed.entity.Users.UserStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

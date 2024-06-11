@@ -1,10 +1,10 @@
-package com.sparta.newsfeed.entity.User;
+package com.sparta.newsfeed.entity.Users;
 
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.entity.Board;
 import com.sparta.newsfeed.entity.Comment;
-import com.sparta.newsfeed.entity.Like.ContentsLike;
+import com.sparta.newsfeed.entity.Likes.ContentsLike;
 import com.sparta.newsfeed.entity.Timer;
 import jakarta.persistence.*;
 import lombok.Getter;

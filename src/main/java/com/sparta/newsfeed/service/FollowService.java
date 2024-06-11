@@ -4,7 +4,7 @@ import com.sparta.newsfeed.dto.FollowDto.FollowRequestDto;
 import com.sparta.newsfeed.dto.FollowDto.FollowResponseDto;
 import com.sparta.newsfeed.dto.FollowDto.FollowStatusResponseDto;
 import com.sparta.newsfeed.entity.Follow;
-import com.sparta.newsfeed.entity.User.User;
+import com.sparta.newsfeed.entity.Users.User;
 import com.sparta.newsfeed.jwt.util.JwtTokenProvider;
 import com.sparta.newsfeed.repository.FollowRepository;
 import com.sparta.newsfeed.repository.UserRepository;
