@@ -22,8 +22,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         // 필터 작동시 로그 추가.
-        System.out.println("JwtAuthenticationFilter 필터 작동!!");
-        System.out.println("입력받은 URI : " + request.getRequestURI());
+        logger.info("JwtAuthenticationFilter 필터 작동!!");
+        logger.info("입력받은 URI : " + request.getRequestURI());
         // 헤더에서 토큰 가져오기
         String authorizationHeader = jwtTokenProvider.getStringtoken_1(request);
 

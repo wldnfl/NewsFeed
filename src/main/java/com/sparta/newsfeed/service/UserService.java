@@ -9,6 +9,8 @@ import com.sparta.newsfeed.repository.MultimediaRepository;
 import com.sparta.newsfeed.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,8 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final MultimediaRepository MultimediaRepository;
     private final JwtTokenProvider jwtTokenProvider;
+
+    private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     // 유저 프로필 가져오기
     public UserResponseDto getUserProfile(HttpServletRequest request) {
@@ -61,7 +65,7 @@ public class UserService {
                 throw new IllegalArgumentException("올바르지 않은 비밀번호 형식입니다");
             }
             user.setPassword(passwordEncoder.encode(newPassword));
-            System.out.println("비밀번호 변경 완료");
+            logger.info("비밀번호 변경 완료");
         }
         if (userRequestDto.getEmail() != null) user.setEmail(userRequestDto.getEmail());
         if (userRequestDto.getUsername() != null) user.setUsername(userRequestDto.getUsername());

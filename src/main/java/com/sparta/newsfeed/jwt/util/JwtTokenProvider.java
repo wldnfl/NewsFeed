@@ -9,6 +9,8 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -31,6 +33,9 @@ public class JwtTokenProvider {
     private final long accessExpiration; // 액세스 토큰 만료 시간 (밀리초)
     private final long refreshExpiration; // 리프레시 토큰 만료 시간 (밀리초)
     private final UserRepository userRepository; // 사용자 저장소
+
+    private final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class.getName());
+
 
     // 생성자
     public JwtTokenProvider(@Value("${jwt.secret.key}") String secretKey,
@@ -87,12 +92,12 @@ public class JwtTokenProvider {
         try {
             // 토큰에서 사용자 ID 추출
             String userId = extractUsername(token);
-            System.out.println("유효성 검사할 토큰의 사용자 ID: " + userId);
+            logger.info("유효성 검사할 토큰의 사용자 ID: " + userId);
             // 토큰의 만료 여부 반환
             return !isTokenExpired(token);
         } catch (JwtException e) {
             // 유효성 검사 실패 시 예외 처리
-            System.out.println("토큰 유효성 검사 실패: " + e.getMessage());
+            logger.info("토큰 유효성 검사 실패: " + e.getMessage());
             return false;
         }
     }

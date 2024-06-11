@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.logging.Logger;
 
 @Service
 @Getter
@@ -35,6 +36,8 @@ public class SignUpService {
     private final EmailService emailService;
     private final EmailVerificationRepository emailVerificationRepository;
     private SignUpRequestDto requestDto;
+
+    private final Logger logger = Logger.getLogger(SignUpService.class.getName());
 
     // 유저 회원가입
     public String addUser(SignUpRequestDto requestDto) {
@@ -168,22 +171,22 @@ public class SignUpService {
     }
 
     private void userlogin(LoginUpRequestDto requestDto, User user) {
-        System.out.println("userlogin 메서드 작동");
+        logger.info("userlogin 메서드 작동");
         if (user == null) {
-            System.out.println("유저 아이디 미존재 에러");
+            logger.info("유저 아이디 미존재 에러");
             throw new IllegalArgumentException("유저 아이디가 존재하지 않습니다.");
         }
 
         if (!user.getUserId().equals(requestDto.getUserId())) {
-            System.out.println("아이디 불일치 에러");
+            logger.info("아이디 불일치 에러");
             throw new IllegalArgumentException("유저 아이디가 일치하지 않습니다");
         }
 
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-            System.out.println("유저 비밀번호 불일치 에러");
+            logger.info("유저 비밀번호 불일치 에러");
             throw new IllegalArgumentException("유저 비밀번호가 올바르지 않습니다.");
         }
-        System.out.println("아이디와 비밀번호 검사 이상없음.");
+        logger.info("아이디와 비밀번호 검사 이상없음.");
     }
 
     // 로그아웃 메서드
@@ -195,7 +198,7 @@ public class SignUpService {
             userRepository.save(user);
             jwtTokenProvider.deleteCookie(response);
         } catch (Exception e) {
-            System.out.println("로그아웃 과정에서 예외 발생: " + e.getMessage());
+            logger.info("로그아웃 과정에서 예외 발생: " + e.getMessage());
             throw e;
         }
         return "로그아웃 완료";
@@ -207,15 +210,10 @@ public class SignUpService {
                              HttpServletRequest request,
                              HttpServletResponse response) {
         User user = jwtTokenProvider.getTokenUser(request);
-        System.out.println("회원 탈퇴 요청을 받았습니다: " + user.getUsername());
+        logger.info("회원 탈퇴 요청을 받았습니다: " + user.getUsername());
 
         // 아이디와 비밀번호 검증 로직 재사용
         userlogin(loginUpRequestDto, user);
-
-//        if (user == null)throw new IllegalArgumentException("해당 유저는 존재하지 않습니다.");
-
-
-//        if (!passwordEncoder.matches(loginUpRequestDto.getPassword(), user.getPassword()))throw new IllegalArgumentException("유저 비밀번호가 올바르지 않습니다.");
 
         if (user.getUserStatus() == UserStatus.WITHDRAWAL) {
             throw new IllegalArgumentException("이미 탈퇴한 사용자입니다.");
@@ -224,7 +222,7 @@ public class SignUpService {
         user.setUserStatus(UserStatus.WITHDRAWAL);
         jwtTokenProvider.deleteCookie(response);
         userRepository.save(user);
-        System.out.println("사용자 " + user.getUsername() + "가 성공적으로 탈퇴되었습니다.");
+        logger.info("사용자 " + user.getUsername() + "가 성공적으로 탈퇴되었습니다.");
         return "회원탈퇴가 완료되었습니다 " + user.getUsername() + "님\n 안녕을 기원합니다.";
     }
 }
