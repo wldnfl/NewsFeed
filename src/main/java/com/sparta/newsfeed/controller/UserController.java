@@ -1,13 +1,11 @@
 package com.sparta.newsfeed.controller;
 
-
 import com.sparta.newsfeed.dto.EmailDto.EmailRequestDto;
 import com.sparta.newsfeed.dto.EmailDto.ReVerifyEMailRequestDto;
 import com.sparta.newsfeed.dto.UserDto.LoginUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.SignUpRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserRequestDto;
 import com.sparta.newsfeed.dto.UserDto.UserResponseDto;
-
 import com.sparta.newsfeed.service.SignUpService;
 import com.sparta.newsfeed.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -59,18 +57,14 @@ public class UserController {
     // 로그아웃
     @PostMapping("/user/logout")
     @Operation(summary = "로그아웃", tags = {"사용자"})
-    public String logoutUser(/*@RequestHeader("AccessToken") String accessToken,*/ HttpServletRequest request, HttpServletResponse response) {
+    public String logoutUser(HttpServletRequest request, HttpServletResponse response) {
         return signUpService.logoutUser(request, response);
     }
 
     // 회원 탈퇴
     @PostMapping("/user/delete")
     @Operation(summary = "회원 탈퇴", tags = {"사용자"})
-    public String deleteUser(/*@RequestHeader("AccessToken") String accessToken,*/
-            @RequestBody
-            LoginUpRequestDto loginUpRequestDto,
-            HttpServletRequest request,
-            HttpServletResponse response) {
+    public String deleteUser(@RequestBody LoginUpRequestDto loginUpRequestDto, HttpServletRequest request, HttpServletResponse response) {
         return signUpService.deleteUser(loginUpRequestDto, request, response);
     }
 
@@ -95,5 +89,4 @@ public class UserController {
     public String PictureUserProfile(HttpServletRequest servletRequest, @RequestPart MultipartFile Pictur) {
         return userService.PictureUserProfile(servletRequest, Pictur);
     }
-
 }
